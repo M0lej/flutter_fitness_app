@@ -18,15 +18,15 @@ class ExerciseAdapter extends TypeAdapter<Exercise> {
     };
     return Exercise(
       name: fields[0] as String,
-      force: fields[1] as String,
-      level: fields[2] as String,
-      mechanic: fields[3] as String,
-      equipment: fields[4] as String,
-      primaryMuscles: (fields[5] as List).cast<String>(),
-      secondaryMuscles: (fields[6] as List).cast<String>(),
-      instructions: (fields[7] as List).cast<String>(),
+      force: fields[1] as String?,
+      level: fields[2] as String?,
+      mechanic: fields[3] as String?,
+      equipment: fields[4] as String?,
+      primaryMuscles: (fields[5] as List?)?.cast<dynamic>(),
+      secondaryMuscles: (fields[6] as List?)?.cast<dynamic>(),
+      instructions: (fields[7] as List?)?.cast<dynamic>(),
       category: fields[8] as String,
-      images: (fields[9] as List).cast<String>(),
+      images: (fields[9] as List).cast<dynamic>(),
       id: fields[10] as String,
     );
   }

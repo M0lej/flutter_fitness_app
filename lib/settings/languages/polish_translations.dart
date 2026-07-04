@@ -1,3 +1,4 @@
+import 'package:gym_app/extensions/string_extensions.dart';
 import 'package:gym_app/settings/languages/translations.dart';
 
 class PolishTranslations extends Translations {
@@ -37,17 +38,32 @@ class PolishTranslations extends Translations {
   ];
 
   @override
-  String get thisWeek => "TEN TYDZIEŃ";
+  List<String> get monthNames => <String>[
+    "stycznia",
+    "luty",
+    "marca",
+    "kwietnia",
+    "maja",
+    "czerwca",
+    "lipca",
+    "sierpnia",
+    "września",
+    "października",
+    "listopada",
+    "grudnia",
+  ];
+
+  @override
+  String Function(DateTime) get formattedDate =>
+      (DateTime date) =>
+          '${weekDayNamesShort[date.weekday - 1].firstToUpperRestToLower()}. ${date.day} ${monthNames[date.month - 1]}';
 
   @override
   String Function(int, int) get workoutProgress =>
       (int progress, int goal) => 'Ukończono $progress z $goal treningów';
 
   @override
-  String get nextWorkout => "NASTĘPNY TRENING";
-  
-  @override
-  String get exercises => "ćwiczenia";
+  String get exercises => "ćwiczeń";
 
   @override
   String get startWorkout => "Rozpocznij trening";
@@ -56,9 +72,39 @@ class PolishTranslations extends Translations {
   String get selectWorkout => "Wybierz trening";
 
   @override
-  String get allPlansHaveBeenCompleted => "Wszystkie treningi zostały ukończone! 🔥";
+  String get allPlansHaveBeenCompleted =>
+      "Wszystkie treningi zostały ukończone! 🔥";
 
   @override
-  String get continueMessage => "Jeśli jednak nie jesteś zadowolony, możesz kontynuować...";
+  String get continueMessage =>
+      "Jeśli jednak nie jesteś zadowolony, możesz kontynuować...";
 
+  // labels
+  @override
+  String get nextWorkout => "NASTĘPNY TRENING";
+
+  @override
+  String get thisWeek => "TEN TYDZIEŃ";
+
+  @override
+  String get recentWorkouts => "OSTATNIE TRENINGI";
+
+  @override
+  String get yourPlans => "TWOJE PLANY";
+
+  @override
+  String get created => "Utworzono";
+
+  @override
+  String get areYouSureYouWantToDelete =>
+      "Czy na pewno chcesz usunąć plan treningowy o nazwie";
+
+  @override
+  String get thisActionCannotBeUndone => "Tej czynności nie da się odwrócić!";
+
+  @override
+  String get delete => "Usuń";
+
+  @override
+  String get cancel => "Anuluj";
 }

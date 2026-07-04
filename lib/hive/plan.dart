@@ -11,5 +11,12 @@ class Plan {
   @HiveField(2)
   final List<Exercise> exercises;
 
-  Plan({required this.name, required this.exercises});
+  @HiveField(3)
+  final DateTime creationDate;
+
+  Plan({
+    required this.name,
+    required this.exercises,
+    required this.creationDate,
+  });
 }

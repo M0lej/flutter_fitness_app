@@ -8,31 +8,31 @@ class Exercise {
   final String name;
 
   @HiveField(1)
-  final String force;
+  final String? force;
 
   @HiveField(2)
-  final String level;
+  final String? level;
 
   @HiveField(3)
-  final String mechanic;
+  final String? mechanic;
 
   @HiveField(4)
-  final String equipment;
+  final String? equipment;
 
   @HiveField(5)
-  final List<String> primaryMuscles;
+  final List<dynamic>? primaryMuscles;
 
   @HiveField(6)
-  final List<String> secondaryMuscles;
+  final List<dynamic>? secondaryMuscles;
 
   @HiveField(7)
-  final List<String> instructions;
+  final List<dynamic>? instructions;
 
   @HiveField(8)
   final String category;
 
   @HiveField(9)
-  final List<String> images;
+  final List<dynamic> images;
 
   @HiveField(10)
   final String id;

@@ -4,7 +4,7 @@ import 'package:gym_app/hive/data_model.dart';
 import 'package:gym_app/hive/exercise.dart';
 import 'package:gym_app/hive/plan.dart';
 import 'package:gym_app/hive/workout_log.dart';
-import 'package:gym_app/pages/home_page.dart';
+import 'package:gym_app/tabs/app_tabs_controller.dart';
 import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/themes/app_theme.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -41,8 +41,7 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme().dark,
-      initialRoute: '/home',
-      routes: {'/home': (context) => const HomePage()},
+      home: AppTabsController(),
     );
   }
 }

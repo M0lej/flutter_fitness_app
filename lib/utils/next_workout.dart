@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gym_app/data/data_provider.dart';
 import 'package:gym_app/hive/plan.dart';
-import 'package:gym_app/hive/workout_log.dart';
 import 'package:gym_app/settings/settings_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -11,7 +10,6 @@ class NextWorkout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<WorkoutLog> workoutLogs = context.watch<DataProvider>().workoutLogs;
     Plan? nextWorkoutPlan = context.watch<DataProvider>().getNextWorkoutPlan();
 
     bool workoutQuotaCompleted = nextWorkoutPlan == null;
@@ -43,7 +41,7 @@ class NextWorkout extends StatelessWidget {
                         settingsModelValues.translations.selectWorkout,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: const Color.fromARGB(255, 23, 21, 30),
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
                       icon: Icon(Icons.keyboard_arrow_right),
@@ -98,7 +96,7 @@ class NextWorkout extends StatelessWidget {
                       "Start workout",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: const Color.fromARGB(255, 23, 21, 30),
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                     icon: Icon(Icons.keyboard_arrow_right),

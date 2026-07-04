@@ -1,3 +1,4 @@
+import 'package:gym_app/extensions/string_extensions.dart';
 import 'package:gym_app/settings/languages/translations.dart';
 
 class EnglishTranslations extends Translations {
@@ -37,14 +38,29 @@ class EnglishTranslations extends Translations {
   ];
 
   @override
-  String get thisWeek => "THIS WEEK";
+  List<String> get monthNames => <String>[
+    "january",
+    "february",
+    "march",
+    "april",
+    "may",
+    "june",
+    "july",
+    "august",
+    "september",
+    "october",
+    "november",
+    "december",
+  ];
+
+  @override
+  String Function(DateTime) get formattedDate =>
+      (DateTime date) =>
+          '${weekDayNamesShort[date.weekday - 1].firstToUpperRestToLower()}. ${monthNames[date.month - 1]} ${date.day}';
 
   @override
   String Function(int, int) get workoutProgress =>
       (int progress, int goal) => '$progress of $goal workouts completed';
-
-  @override
-  String get nextWorkout => "NEXT WORKOUT";
 
   @override
   String get exercises => "exercises";
@@ -61,4 +77,33 @@ class EnglishTranslations extends Translations {
   @override
   String get continueMessage =>
       "But if you are not satisfied you can continue...";
+
+  // labels
+  @override
+  String get nextWorkout => "NEXT WORKOUT";
+
+  @override
+  String get thisWeek => "THIS WEEK";
+
+  @override
+  String get recentWorkouts => "RECENT WORKOUTS";
+
+  @override
+  String get yourPlans => "YOUR PLANS";
+
+  @override
+  String get created => "Created";
+
+  @override
+  String get areYouSureYouWantToDelete =>
+      "Are you sure you want to delete workout plan with name";
+
+  @override
+  String get thisActionCannotBeUndone => "This action cannot be undone!";
+
+  @override
+  String get delete => "Delete";
+
+  @override
+  String get cancel => "Cancel";
 }
