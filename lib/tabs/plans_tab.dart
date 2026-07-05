@@ -21,7 +21,10 @@ class _PlansTabState extends State<PlansTab> {
       builder: (context, settingsModelValues, dataModelValues, child) =>
           CustomScrollView(
             slivers: [
+              // app bar
               PlansTabAppBar(),
+
+              // content padding
               SliverPadding(
                 padding: const EdgeInsets.all(15),
                 sliver: SliverList.list(
@@ -41,7 +44,7 @@ class _PlansTabState extends State<PlansTab> {
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: dataModelValues.plans.length,
                       shrinkWrap: true,
-                      separatorBuilder: (_, __) => MyDivider(),
+                      separatorBuilder: (_, _) => MyDivider(),
                       itemBuilder: (context, index) {
                         Plan currentPlan = dataModelValues.plans[index];
 

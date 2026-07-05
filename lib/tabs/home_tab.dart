@@ -55,16 +55,6 @@ class HomeTab extends StatelessWidget {
                     Row(
                       children: [
                         ElevatedButton(
-                          onPressed: () => dataModelValues.addPlan(
-                            Plan(
-                              name: generateRandomString(5),
-                              exercises: [],
-                              creationDate: DateTime.now(),
-                            ),
-                          ),
-                          child: Text("dodaj plan"),
-                        ),
-                        ElevatedButton(
                           onPressed: () => dataModelValues.removePlan(
                             dataModelValues.plans.last,
                           ),

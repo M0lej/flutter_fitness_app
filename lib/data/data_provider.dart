@@ -33,6 +33,17 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void editPlan(Plan plan) async {
+    List<Plan> changedPlans = plans
+        .where((Plan storedPlan) => storedPlan.id != plan.id)
+        .toList();
+
+    changedPlans.add(plan);
+
+    _box.put('data', DataModel(plans: changedPlans, workoutLogs: workoutLogs));
+    notifyListeners();
+  }
+
   // create new data model with updated list of workout logs and notify listeners
   void addLog(Plan plan) async {
     WorkoutLog workoutLog = WorkoutLog(plan: plan, dateTime: DateTime.now());

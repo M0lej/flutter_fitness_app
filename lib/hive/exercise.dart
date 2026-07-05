@@ -1,3 +1,4 @@
+import 'package:gym_app/hive/serie.dart';
 import 'package:hive/hive.dart';
 
 part 'exercise.g.dart';
@@ -32,9 +33,12 @@ class Exercise {
   final String category;
 
   @HiveField(9)
-  final List<dynamic> images;
+  List<Serie> series;
 
   @HiveField(10)
+  final List<dynamic> images;
+
+  @HiveField(11)
   final String id;
 
   Exercise({
@@ -47,6 +51,7 @@ class Exercise {
     required this.secondaryMuscles,
     required this.instructions,
     required this.category,
+    required this.series,
     required this.images,
     required this.id,
   });
@@ -62,6 +67,7 @@ class Exercise {
       secondaryMuscles: json["secondaryMuscles"],
       instructions: json["instructions"],
       category: json["category"],
+      series: [],
       images: json["images"],
       id: json["id"],
     );

@@ -1,6 +1,8 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gym_app/data/data_provider.dart';
+import 'package:gym_app/hive/exercise.dart';
 import 'package:gym_app/hive/plan.dart';
 import 'package:gym_app/settings/settings_provider.dart';
 import 'package:provider/provider.dart';
@@ -36,7 +38,7 @@ class NextWorkout extends StatelessWidget {
                 children: [
                   Expanded(
                     child: TextButton.icon(
-                      onPressed: () => print("test"),
+                      onPressed: null,
                       label: Text(
                         settingsModelValues.translations.selectWorkout,
                         style: TextStyle(
@@ -56,13 +58,20 @@ class NextWorkout extends StatelessWidget {
       );
     }
 
+    String primaryMusclesString = nextWorkoutPlan.exercises
+        .map((Exercise exercise) => exercise.primaryMuscles?.join(', '))
+        .join(', ');
+
     return Consumer2<SettingsProvider, DataProvider>(
       builder: (context, settingModelValues, dataModelValues, child) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 5,
         children: [
-          Text(
+          AutoSizeText(
             nextWorkoutPlan.name,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            minFontSize: 20,
             style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
           ),
           Text(
@@ -72,15 +81,21 @@ class NextWorkout extends StatelessWidget {
               fontSize: 12,
             ),
           ),
+
+          // primary muscles
           Row(
             spacing: 5,
             children: [
-              const FaIcon(FontAwesomeIcons.dumbbell, size: 15),
-              Text(
-                "Chest, Shoulders, Triceps",
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.secondary,
-                  fontSize: 12,
+              nextWorkoutPlan.icon,
+              Expanded(
+                child: AutoSizeText(
+                  primaryMusclesString,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.secondary,
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ],
@@ -91,7 +106,7 @@ class NextWorkout extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextButton.icon(
-                    onPressed: () => print("test"),
+                    onPressed: null,
                     label: Text(
                       "Start workout",
                       style: TextStyle(

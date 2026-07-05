@@ -22,6 +22,7 @@ class CustomCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 15,
           children: [
+            // dont display the title if title string is empty
             if (title != null)
               Text(title!.toUpperCase(), style: TextStyle(fontSize: 12)),
             ...children,

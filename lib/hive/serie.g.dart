@@ -1,44 +1,35 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'plan.dart';
+part of 'serie.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class PlanAdapter extends TypeAdapter<Plan> {
+class SerieAdapter extends TypeAdapter<Serie> {
   @override
-  final int typeId = 2;
+  final int typeId = 5;
 
   @override
-  Plan read(BinaryReader reader) {
+  Serie read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Plan(
-      name: fields[0] as String,
-      exercises: (fields[2] as List).cast<Exercise>(),
-      creationDate: fields[3] as DateTime,
-      iconName: fields[4] as String,
-      id: fields[5] as String,
+    return Serie(
+      reps: fields[0] as int,
+      weight: fields[1] as double,
     );
   }
 
   @override
-  void write(BinaryWriter writer, Plan obj) {
+  void write(BinaryWriter writer, Serie obj) {
     writer
-      ..writeByte(5)
-      ..writeByte(0)
-      ..write(obj.name)
       ..writeByte(2)
-      ..write(obj.exercises)
-      ..writeByte(3)
-      ..write(obj.creationDate)
-      ..writeByte(4)
-      ..write(obj.iconName)
-      ..writeByte(5)
-      ..write(obj.id);
+      ..writeByte(0)
+      ..write(obj.reps)
+      ..writeByte(1)
+      ..write(obj.weight);
   }
 
   @override
@@ -47,7 +38,7 @@ class PlanAdapter extends TypeAdapter<Plan> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is PlanAdapter &&
+      other is SerieAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

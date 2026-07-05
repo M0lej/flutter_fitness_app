@@ -3,8 +3,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MyIcon extends StatelessWidget {
   final double size;
-  final FaIcon faIcon;
-  const MyIcon({super.key, required this.size, required this.faIcon});
+  final Widget icon;
+  const MyIcon({super.key, required this.size, required this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class MyIcon extends StatelessWidget {
         child: FittedBox(
           child: Padding(
             padding: EdgeInsets.all(8.0),
-            child: Center(child: faIcon),
+            child: Center(child: icon),
           ),
         ),
       ),

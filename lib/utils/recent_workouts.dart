@@ -37,7 +37,7 @@ class RecentWorkouts extends StatelessWidget {
                 children: [
                   const MyIcon(
                     size: 40,
-                    faIcon: FaIcon(FontAwesomeIcons.dumbbell),
+                    icon: FaIcon(FontAwesomeIcons.dumbbell),
                   ),
                   Expanded(
                     child: Row(
