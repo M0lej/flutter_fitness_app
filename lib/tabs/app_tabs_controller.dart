@@ -12,8 +12,12 @@ class AppTabsController extends StatefulWidget {
   State<AppTabsController> createState() => _AppTabsControllerState();
 }
 
-void changeTab(int index, BuildContext context){
-  
+void changeTab(int index, BuildContext context) {
+  final state = context.findAncestorStateOfType<_AppTabsControllerState>();
+
+  if (state != null) {
+    state._onTap(index, context);
+  }
 }
 
 class _AppTabsControllerState extends State<AppTabsController> {

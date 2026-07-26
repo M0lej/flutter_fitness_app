@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app/data/data_provider.dart';
+import 'package:gym_app/hive/workout_log.dart';
 import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/utils/appBars/home_tab_app_bar.dart';
 import 'package:gym_app/utils/custom_card.dart';
@@ -47,6 +48,17 @@ class HomeTab extends StatelessWidget {
                         title: settingModelValues.translations.recentWorkouts,
                         children: [RecentWorkouts()],
                       ),
+                    TextButton(
+                      onPressed: () {
+                        List<WorkoutLog> workoutLogs = context
+                            .read<DataProvider>()
+                            .workoutLogs;
+                        for (WorkoutLog workoutLog in workoutLogs) {
+                          context.read<DataProvider>().removeLog(workoutLog);
+                        }
+                      },
+                      child: Text("Wyczyść logi"),
+                    ),
                   ],
                 ),
               ),

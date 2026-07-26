@@ -106,4 +106,34 @@ class EnglishTranslations extends Translations {
 
   @override
   String get cancel => "Cancel";
+
+  @override
+  String get weightUnit => "Weight unit";
+
+  @override
+  String get reps => "Reps";
+
+  @override
+  String get weight => "Weight";
+
+  @override
+  String get areSureYouWantToExitWithoutSaving =>
+      "Are you sure you want leave without saving?";
+
+  @override
+  String get areYouSureWantToUpdateThisWorkout =>
+      "Are sure you want to update this workout?";
+
+  @override
+  String get areYouSureYouWantToEnd => "Are sure you want to end this workout?";
+
+  @override
+  String get doYouWantToSaveChangesToYourPlan =>
+      "Do you want to save changes to your plan?";
+
+  @override
+  String get yes => "Yes";
+
+  @override
+  String get no => "No";
 }

@@ -69,8 +69,10 @@ class _WorkoutTabState extends State<WorkoutTab> {
       builder: (context) => Consumer<SettingsProvider>(
         builder: (context, settingsModelValues, child) => MyAlertDialog(
           title: widget.logToEdit != null
-              ? "Are sure you want to update this workout?"
-              : "Are you sure you want to end this workout?",
+              ? settingsModelValues
+                    .translations
+                    .areYouSureWantToUpdateThisWorkout
+              : settingsModelValues.translations.areYouSureYouWantToEnd,
           description: "",
           buttons: [
             TextButton.icon(
@@ -93,7 +95,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
                 }
               },
               label: Text(
-                "Yes",
+                settingsModelValues.translations.yes,
                 style: TextStyle(color: Theme.of(context).colorScheme.primary),
               ),
               icon: const Icon(Icons.check, color: Colors.white),
@@ -101,7 +103,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
             TextButton.icon(
               onPressed: () => Navigator.pop(context),
               label: Text(
-                "No",
+                settingsModelValues.translations.no,
                 style: TextStyle(color: Theme.of(context).colorScheme.primary),
               ),
               icon: const Icon(Icons.close, color: Colors.white),
@@ -141,40 +143,43 @@ class _WorkoutTabState extends State<WorkoutTab> {
 
     showDialog(
       context: context,
-      builder: (context) => MyAlertDialog(
-        title: "Do you want to save changes to your plan?",
-        buttons: [
-          TextButton.icon(
-            onPressed: () {
-              _updatePlan();
-              Navigator.pop(context);
-            },
-            label: Text(
-              "Yes",
-              style: TextStyle(color: Theme.of(context).colorScheme.primary),
-            ),
-            icon: const Icon(Icons.check, color: Colors.white),
-          ),
-          TextButton.icon(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(appContext);
-            },
-            label: Text(
-              "No",
-              style: TextStyle(color: Theme.of(context).colorScheme.primary),
-            ),
-            icon: const Icon(Icons.close, color: Colors.white),
-            style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all(
-                Theme.of(context).cardTheme.color,
+      builder: (context) => Consumer<SettingsProvider>(
+        builder: (context, settingsModelValues, child) => MyAlertDialog(
+          title:
+              settingsModelValues.translations.doYouWantToSaveChangesToYourPlan,
+          buttons: [
+            TextButton.icon(
+              onPressed: () {
+                _updatePlan();
+                Navigator.pop(context);
+              },
+              label: Text(
+                settingsModelValues.translations.yes,
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
               ),
-              side: WidgetStateProperty.all(
-                BorderSide(color: AppTheme.borderColor),
+              icon: const Icon(Icons.check, color: Colors.white),
+            ),
+            TextButton.icon(
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(appContext);
+              },
+              label: Text(
+                settingsModelValues.translations.no,
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+              ),
+              icon: const Icon(Icons.close, color: Colors.white),
+              style: ButtonStyle(
+                backgroundColor: WidgetStateProperty.all(
+                  Theme.of(context).cardTheme.color,
+                ),
+                side: WidgetStateProperty.all(
+                  BorderSide(color: AppTheme.borderColor),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

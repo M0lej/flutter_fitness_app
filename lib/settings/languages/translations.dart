@@ -32,4 +32,16 @@ abstract class Translations {
 
   String get delete;
   String get cancel;
+
+  String get weightUnit;
+  String get reps;
+  String get weight;
+
+  String get areSureYouWantToExitWithoutSaving;
+  String get areYouSureWantToUpdateThisWorkout;
+  String get areYouSureYouWantToEnd;
+  String get doYouWantToSaveChangesToYourPlan;
+
+  String get yes;
+  String get no;  
 }

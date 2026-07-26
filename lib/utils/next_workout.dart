@@ -1,10 +1,10 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gym_app/data/data_provider.dart';
 import 'package:gym_app/hive/exercise.dart';
 import 'package:gym_app/hive/plan.dart';
 import 'package:gym_app/settings/settings_provider.dart';
+import 'package:gym_app/tabs/app_tabs_controller.dart';
 import 'package:gym_app/tabs/workout_tab.dart';
 import 'package:provider/provider.dart';
 
@@ -39,7 +39,7 @@ class NextWorkout extends StatelessWidget {
                 children: [
                   Expanded(
                     child: TextButton.icon(
-                      onPressed: null,
+                      onPressed: () => changeTab(1, context),
                       label: Text(
                         settingsModelValues.translations.selectWorkout,
                         style: TextStyle(

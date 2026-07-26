@@ -107,4 +107,34 @@ class PolishTranslations extends Translations {
 
   @override
   String get cancel => "Anuluj";
+
+  @override
+  String get weightUnit => "Jednostka wagi";
+
+  @override
+  String get reps => "Powtórzenia";
+
+  @override
+  String get weight => "Ciężar";
+
+  @override
+  String get areSureYouWantToExitWithoutSaving =>
+      "Czy na pewno chcesz wyjść bez zapisywania?";
+
+  @override
+  String get areYouSureWantToUpdateThisWorkout =>
+      "Czy na pewno chcesz zaktualizować trening?";
+
+  @override
+  String get areYouSureYouWantToEnd => "Czy na pewno chcesz zakończyć trening";
+
+  @override
+  String get doYouWantToSaveChangesToYourPlan =>
+      "Czy chcesz zaktualizować zmiany w twoim planie treningowym?";
+
+  @override
+  String get yes => "Tak";
+
+  @override
+  String get no => "Nie";
 }

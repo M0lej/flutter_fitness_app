@@ -7,9 +7,9 @@ extension WeightParsing on double {
 
     switch (weightUnit) {
       case WeightUnit.kg:
-        return (this * 2.205).toFixed(2);
+        return (this * 2.2046226218).toFixed(2);
       case WeightUnit.lbs:
-        return (this * 0.454).toFixed(2);
+        return (this * 0.45359237).toFixed(2);
     }
   }
 }
