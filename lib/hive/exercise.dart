@@ -1,4 +1,7 @@
-import 'package:gym_app/hive/serie.dart';
+import 'package:flutter/foundation.dart';
+import 'package:gym_app/hive/workout_set.dart';
+import 'package:gym_app/hive/weight_unit.dart';
+import 'package:gym_app/settings/settings_provider.dart';
 import 'package:hive/hive.dart';
 
 part 'exercise.g.dart';
@@ -33,12 +36,15 @@ class Exercise {
   final String category;
 
   @HiveField(9)
-  List<Serie> series;
+  List<WorkoutSet> workoutSets;
 
   @HiveField(10)
-  final List<dynamic> images;
+  WeightUnit weightUnit;
 
   @HiveField(11)
+  final List<dynamic> images;
+
+  @HiveField(12)
   final String id;
 
   Exercise({
@@ -51,10 +57,27 @@ class Exercise {
     required this.secondaryMuscles,
     required this.instructions,
     required this.category,
-    required this.series,
+    required this.workoutSets,
+    required this.weightUnit,
     required this.images,
     required this.id,
   });
+
+  Exercise copy() => Exercise(
+    name: name,
+    workoutSets: workoutSets.map((s) => s.copy()).toList(),
+    force: force,
+    level: level,
+    mechanic: mechanic,
+    equipment: equipment,
+    primaryMuscles: primaryMuscles,
+    secondaryMuscles: secondaryMuscles,
+    instructions: instructions,
+    category: category,
+    weightUnit: weightUnit,
+    images: images,
+    id: id,
+  );
 
   factory Exercise.fromJson(Map<String, dynamic> json) {
     return Exercise(
@@ -67,7 +90,8 @@ class Exercise {
       secondaryMuscles: json["secondaryMuscles"],
       instructions: json["instructions"],
       category: json["category"],
-      series: [],
+      workoutSets: [],
+      weightUnit: WeightUnit.kg,
       images: json["images"],
       id: json["id"],
     );

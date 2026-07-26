@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gym_app/data/data_provider.dart';
 import 'package:gym_app/hive/workout_log.dart';
 import 'package:gym_app/settings/settings_provider.dart';
+import 'package:gym_app/tabs/workout_tab.dart';
 import 'package:gym_app/utils/my_icon.dart';
 import 'package:provider/provider.dart';
 
@@ -32,41 +33,54 @@ class RecentWorkouts extends StatelessWidget {
 
               WorkoutLog workoutLog = recentWorkouts.elementAt(index);
 
-              return Row(
-                spacing: 15,
-                children: [
-                  const MyIcon(
-                    size: 40,
-                    icon: FaIcon(FontAwesomeIcons.dumbbell),
-                  ),
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              workoutLog.plan.name,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                              ),
-                            ),
-                            Text(
-                              '${settingsModelValues.translations.formattedDate(workoutLog.dateTime)} | ${workoutLog.plan.exercises.length} ${settingsModelValues.translations.exercises}',
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.secondary,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Icon(Icons.keyboard_arrow_right),
-                      ],
+              return GestureDetector(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => WorkoutTab(
+                      plan: workoutLog.plan,
+                      logToEdit: workoutLog,
                     ),
                   ),
-                ],
+                ),
+                child: Row(
+                  spacing: 15,
+                  children: [
+                    const MyIcon(
+                      size: 40,
+                      icon: FaIcon(FontAwesomeIcons.dumbbell),
+                    ),
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                workoutLog.plan.name,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              Text(
+                                '${settingsModelValues.translations.formattedDate(workoutLog.dateTime)} | ${workoutLog.plan.exercises.length} ${settingsModelValues.translations.exercises}',
+                                style: TextStyle(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.secondary,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Icon(Icons.keyboard_arrow_right),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               );
             },
             separatorBuilder: (context, index) => Padding(

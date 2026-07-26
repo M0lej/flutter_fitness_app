@@ -4,6 +4,7 @@ import 'package:gym_app/data/exercises.dart';
 import 'package:gym_app/hive/exercise.dart';
 import 'package:gym_app/themes/app_theme.dart';
 import 'package:gym_app/utils/my_divider.dart';
+import 'package:gym_app/utils/my_image.dart';
 
 enum ExercisesSource { library, custom }
 
@@ -192,25 +193,31 @@ class _ExerciseSearchTabState extends State<ExerciseSearchTab> {
                 child: Padding(
                   padding: const EdgeInsets.all(15),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    spacing: 15,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          AutoSizeText(
-                            exercise.name,
-                            maxFontSize: 15,
-                            style: TextStyle(fontSize: 15),
-                          ),
-
-                          Text(
-                            exercise.primaryMuscles?.join(", ") ?? "",
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Theme.of(context).colorScheme.secondary,
+                      MyImage(
+                        size: 150,
+                        path: './assets/exercises/${exercise.images[0]}',
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AutoSizeText(
+                              exercise.name,
+                              maxFontSize: 15,
+                              maxLines: 1,
+                              style: TextStyle(fontSize: 15),
                             ),
-                          ),
-                        ],
+                            Text(
+                              exercise.primaryMuscles?.join(", ") ?? "",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       IconButton(
                         onPressed: () => widget.addExercise(exercise),

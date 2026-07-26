@@ -5,6 +5,7 @@ import 'package:gym_app/data/data_provider.dart';
 import 'package:gym_app/hive/exercise.dart';
 import 'package:gym_app/hive/plan.dart';
 import 'package:gym_app/settings/settings_provider.dart';
+import 'package:gym_app/tabs/workout_tab.dart';
 import 'package:provider/provider.dart';
 
 class NextWorkout extends StatelessWidget {
@@ -62,6 +63,15 @@ class NextWorkout extends StatelessWidget {
         .map((Exercise exercise) => exercise.primaryMuscles?.join(', '))
         .join(', ');
 
+    void startWorkout() {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => WorkoutTab(plan: nextWorkoutPlan),
+        ),
+      );
+    }
+
     return Consumer2<SettingsProvider, DataProvider>(
       builder: (context, settingModelValues, dataModelValues, child) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,7 +116,7 @@ class NextWorkout extends StatelessWidget {
               children: [
                 Expanded(
                   child: TextButton.icon(
-                    onPressed: null,
+                    onPressed: startWorkout,
                     label: Text(
                       "Start workout",
                       style: TextStyle(

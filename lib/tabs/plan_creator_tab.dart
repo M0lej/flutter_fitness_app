@@ -6,6 +6,7 @@ import 'package:gym_app/hive/plan.dart';
 import 'package:gym_app/tabs/exercise_search_tab.dart';
 import 'package:gym_app/themes/app_theme.dart';
 import 'package:gym_app/utils/exercise_card.dart';
+import 'package:gym_app/utils/my_alert_dialog.dart';
 import 'package:gym_app/utils/my_divider.dart';
 import 'package:gym_app/utils/my_icon.dart';
 import 'package:provider/provider.dart';
@@ -25,17 +26,20 @@ class _PlanCreatorTabState extends State<PlanCreatorTab> {
   String _iconName = FontAwesomeIcons.dumbbell.toString();
   String _name = "";
   List<Exercise> _exercises = <Exercise>[];
+  late Plan? _copiedPlanToEdit;
 
   Widget _icon = FaIcon(FontAwesomeIcons.dumbbell);
 
   @override
   void initState() {
     if (widget.planToEdit != null) {
-      _exercises = widget.planToEdit!.exercises;
-      _name = widget.planToEdit!.name;
-      _iconName = widget.planToEdit!.iconName;
+      _copiedPlanToEdit = widget.planToEdit!.copy();
 
-      _icon = widget.planToEdit!.icon;
+      _exercises = _copiedPlanToEdit!.exercises;
+      _name = _copiedPlanToEdit!.name;
+      _iconName = _copiedPlanToEdit!.iconName;
+
+      _icon = _copiedPlanToEdit!.icon;
     }
     super.initState();
   }
@@ -87,10 +91,7 @@ class _PlanCreatorTabState extends State<PlanCreatorTab> {
   void _addPlan(BuildContext context) {
     if (_exercises.isEmpty || _name.isEmpty || _iconName.isEmpty) return;
 
-    print(
-      'adding plan with icon $_iconName ${FontAwesomeIcons.dumbbell.toString()}',
-    );
-    String uuid = Uuid().toString();
+    String uuid = Uuid().v1().toString();
 
     context.read<DataProvider>().addPlan(
       Plan(
@@ -180,6 +181,7 @@ class _PlanCreatorTabState extends State<PlanCreatorTab> {
     Navigator.pop(dialogContext);
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Consumer2(
@@ -187,6 +189,10 @@ class _PlanCreatorTabState extends State<PlanCreatorTab> {
           Scaffold(
             appBar: AppBar(
               title: Text("Plan creator"),
+              leading: IconButton(
+                onPressed: () => closeWithoutSaving(context),
+                icon: Icon(Icons.arrow_back),
+              ),
               actions: [
                 // submit plan
                 IconButton(

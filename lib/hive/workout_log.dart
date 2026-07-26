@@ -11,5 +11,11 @@ class WorkoutLog {
   @HiveField(1)
   final DateTime dateTime;
 
-  WorkoutLog({required this.plan, required this.dateTime});
+  @HiveField(2)
+  final String id;
+
+  WorkoutLog copy() =>
+      WorkoutLog(plan: plan.copy(), dateTime: dateTime, id: id);
+
+  WorkoutLog({required this.plan, required this.dateTime, required this.id});
 }

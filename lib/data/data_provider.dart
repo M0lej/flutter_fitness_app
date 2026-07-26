@@ -3,6 +3,7 @@ import 'package:gym_app/hive/data_model.dart';
 import 'package:gym_app/hive/plan.dart';
 import 'package:gym_app/hive/workout_log.dart';
 import 'package:hive/hive.dart';
+import 'package:uuid/uuid.dart';
 
 class DataProvider extends ChangeNotifier {
   // get box
@@ -34,11 +35,13 @@ class DataProvider extends ChangeNotifier {
   }
 
   void editPlan(Plan plan) async {
+    int index = plans.indexWhere((Plan storedPlan) => storedPlan.id == plan.id);
+
     List<Plan> changedPlans = plans
         .where((Plan storedPlan) => storedPlan.id != plan.id)
         .toList();
 
-    changedPlans.add(plan);
+    changedPlans.insert(index, plan);
 
     _box.put('data', DataModel(plans: changedPlans, workoutLogs: workoutLogs));
     notifyListeners();
@@ -46,15 +49,34 @@ class DataProvider extends ChangeNotifier {
 
   // create new data model with updated list of workout logs and notify listeners
   void addLog(Plan plan) async {
-    WorkoutLog workoutLog = WorkoutLog(plan: plan, dateTime: DateTime.now());
-
-    // print(plan.name);
-    // print(plans.map((p) => p.name).toList());
+    WorkoutLog workoutLog = WorkoutLog(
+      plan: plan,
+      dateTime: DateTime.now(),
+      id: Uuid().v1().toString(),
+    );
 
     _box.put(
       'data',
       DataModel(plans: plans, workoutLogs: [...workoutLogs, workoutLog]),
     );
+    notifyListeners();
+  }
+
+  // update existing workout log
+  void editLog(WorkoutLog workoutLog) async {
+    int index = workoutLogs.indexWhere(
+      (WorkoutLog storedWorkoutLog) => storedWorkoutLog.id == workoutLog.id,
+    );
+
+    List<WorkoutLog> changedLogs = workoutLogs
+        .where(
+          (WorkoutLog storedWorkoutLog) => storedWorkoutLog.id != workoutLog.id,
+        )
+        .toList();
+
+    changedLogs.insert(index, workoutLog);
+
+    _box.put('data', DataModel(plans: plans, workoutLogs: changedLogs));
     notifyListeners();
   }
 
@@ -107,10 +129,14 @@ class DataProvider extends ChangeNotifier {
     // get plans that have not been realized this week and return the first plan in the list
 
     List<Plan> notRealizedPlansThisWeek = plans
-        .where((Plan plan) => !realizedPlansThisWeek.contains(plan))
+        .where(
+          (Plan plan) =>
+              realizedPlansThisWeek.toList().indexWhere(
+                (Plan realizedPlan) => realizedPlan.id == plan.id,
+              ) ==
+              -1,
+        )
         .toList();
-
-    // print(notRealizedPlansThisWeek.map((p) => p.name).toList());
 
     if (notRealizedPlansThisWeek.isEmpty) {
       return null;

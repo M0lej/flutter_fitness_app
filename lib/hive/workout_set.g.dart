@@ -1,35 +1,38 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'serie.dart';
+part of 'workout_set.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class SerieAdapter extends TypeAdapter<Serie> {
+class WorkoutSetAdapter extends TypeAdapter<WorkoutSet> {
   @override
   final int typeId = 5;
 
   @override
-  Serie read(BinaryReader reader) {
+  WorkoutSet read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Serie(
+    return WorkoutSet(
       reps: fields[0] as int,
       weight: fields[1] as double,
+      id: fields[2] as String,
     );
   }
 
   @override
-  void write(BinaryWriter writer, Serie obj) {
+  void write(BinaryWriter writer, WorkoutSet obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.reps)
       ..writeByte(1)
-      ..write(obj.weight);
+      ..write(obj.weight)
+      ..writeByte(2)
+      ..write(obj.id);
   }
 
   @override
@@ -38,7 +41,7 @@ class SerieAdapter extends TypeAdapter<Serie> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SerieAdapter &&
+      other is WorkoutSetAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

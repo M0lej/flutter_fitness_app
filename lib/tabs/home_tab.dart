@@ -1,9 +1,5 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:gym_app/data/data_provider.dart';
-import 'package:gym_app/hive/plan.dart';
-import 'package:gym_app/hive/workout_log.dart';
 import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/utils/appBars/home_tab_app_bar.dart';
 import 'package:gym_app/utils/custom_card.dart';
@@ -51,47 +47,6 @@ class HomeTab extends StatelessWidget {
                         title: settingModelValues.translations.recentWorkouts,
                         children: [RecentWorkouts()],
                       ),
-
-                    Row(
-                      children: [
-                        ElevatedButton(
-                          onPressed: () => dataModelValues.removePlan(
-                            dataModelValues.plans.last,
-                          ),
-                          child: Text("usuń plan"),
-                        ),
-                      ],
-                    ),
-
-                    Row(
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            List<WorkoutLog> workoutLogsThisWeek =
-                                dataModelValues.getWorkoutLogsFromThisWeek();
-                            Set<Plan> realizedPlans = workoutLogsThisWeek
-                                .map((w) => w.plan)
-                                .toSet();
-
-                            List<Plan> unrealizedPlans = dataModelValues.plans
-                                .where((p) => !realizedPlans.contains(p))
-                                .toList();
-
-                            if (unrealizedPlans.isNotEmpty) {
-                              dataModelValues.addLog(unrealizedPlans.first);
-                            }
-                          },
-                          child: Text("dodaj log"),
-                        ),
-
-                        ElevatedButton(
-                          onPressed: () => dataModelValues.removeLog(
-                            dataModelValues.workoutLogs.last,
-                          ),
-                          child: Text("usuń log"),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ),
@@ -99,11 +54,4 @@ class HomeTab extends StatelessWidget {
           ),
     );
   }
-}
-
-String generateRandomString(int len) {
-  var r = Random();
-  const _chars =
-      'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
-  return List.generate(len, (index) => _chars[r.nextInt(_chars.length)]).join();
 }

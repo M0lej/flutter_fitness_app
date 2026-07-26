@@ -6,7 +6,7 @@ import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/tabs/plan_creator_tab.dart';
 import 'package:gym_app/tabs/workout_tab.dart';
 import 'package:gym_app/themes/app_theme.dart';
-import 'package:gym_app/utils/delete_plan_dialog.dart';
+import 'package:gym_app/utils/my_alert_dialog.dart';
 import 'package:gym_app/utils/my_icon.dart';
 import 'package:provider/provider.dart';
 
@@ -32,11 +32,47 @@ class _PlanCardState extends State<PlanCard> {
   void _deletePlan() {
     showDialog(
       context: context,
-      builder: (context) => DeletePlanDialog(
-        deletePlan: () {
-          context.read<DataProvider>().removePlan(widget.plan);
-        },
-        planName: widget.plan.name,
+      builder: (context) => Consumer2<SettingsProvider, DataProvider>(
+        builder: (context, settingsModelValues, dataModelValues, child) =>
+            MyAlertDialog(
+              title:
+                  '${settingsModelValues.translations.areYouSureYouWantToDelete} "${widget.plan.name}" ?',
+              description:
+                  '\n\n${settingsModelValues.translations.thisActionCannotBeUndone}',
+              buttons: [
+                TextButton.icon(
+                  onPressed: () {
+                    dataModelValues.removePlan(widget.plan);
+                    Navigator.pop(context);
+                  },
+                  label: Text(
+                    settingsModelValues.translations.delete,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  icon: const Icon(Icons.delete_forever, color: Colors.white),
+                ),
+                TextButton.icon(
+                  onPressed: () => Navigator.pop(context),
+                  label: Text(
+                    settingsModelValues.translations.cancel,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  ),
+                  icon: const Icon(Icons.cancel, color: Colors.white),
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.all(
+                      Theme.of(context).cardTheme.color,
+                    ),
+                    side: WidgetStateProperty.all(
+                      BorderSide(color: AppTheme.borderColor),
+                    ),
+                  ),
+                ),
+              ],
+            ),
       ),
     );
   }

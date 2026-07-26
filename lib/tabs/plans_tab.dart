@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:gym_app/data/data_provider.dart';
 import 'package:gym_app/hive/plan.dart';
 import 'package:gym_app/settings/settings_provider.dart';
-import 'package:gym_app/utils/appBars/plans_tab_app_bar.dart';
+import 'package:gym_app/tabs/plan_creator_tab.dart';
+import 'package:gym_app/utils/appBars/my_app_bar.dart';
 import 'package:gym_app/utils/my_divider.dart';
 import 'package:gym_app/utils/plan_card.dart';
 import 'package:provider/provider.dart';
@@ -22,7 +23,22 @@ class _PlansTabState extends State<PlansTab> {
           CustomScrollView(
             slivers: [
               // app bar
-              PlansTabAppBar(),
+              MyAppBar(
+                title: settingsModelValues.translations.plans,
+                actions: [
+                  IconButton(
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => PlanCreatorTab()),
+                    ),
+                    icon: Icon(Icons.add, size: 30),
+                    style: ButtonStyle(
+                      padding: WidgetStateProperty.all(EdgeInsets.all(0)),
+                      backgroundColor: WidgetStateProperty.all(Colors.red),
+                    ),
+                  ),
+                ],
+              ),
 
               // content padding
               SliverPadding(

@@ -12,6 +12,10 @@ class AppTabsController extends StatefulWidget {
   State<AppTabsController> createState() => _AppTabsControllerState();
 }
 
+void changeTab(int index, BuildContext context){
+  
+}
+
 class _AppTabsControllerState extends State<AppTabsController> {
   int _currentIndex = 0;
 
