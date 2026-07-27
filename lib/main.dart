@@ -14,8 +14,11 @@ import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // init hive
   await Hive.initFlutter();
 
+  // register all adapters
   Hive.registerAdapter(DataModelAdapter());
   Hive.registerAdapter(ExerciseAdapter());
   Hive.registerAdapter(WorkoutSetAdapter());
@@ -27,6 +30,7 @@ void main() async {
   await Hive.openBox<DataModel>('data');
 
   runApp(
+    // init providers with default data
     MultiProvider(
       providers: [
         ChangeNotifierProvider(

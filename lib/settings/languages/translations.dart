@@ -25,6 +25,9 @@ abstract class Translations {
   String get recentWorkouts;
 
   String get yourPlans;
+  String get activeWorkout;
+  String get onlyOneSessionTitle;
+  Function(String) get onlyOneSessionDesc;
   String get created;
 
   String get areYouSureYouWantToDelete;
@@ -43,5 +46,5 @@ abstract class Translations {
   String get doYouWantToSaveChangesToYourPlan;
 
   String get yes;
-  String get no;  
+  String get no;
 }

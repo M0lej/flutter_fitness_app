@@ -15,11 +15,18 @@ class DataProvider extends ChangeNotifier {
   // get all workout logs
   List<WorkoutLog> get workoutLogs => _box.get('data')?.workoutLogs ?? [];
 
+  // get active workout plan
+  WorkoutLog? get activeWorkout => _box.get('data')?.activeWorkout;
+
   // create new data model with updated list of plans and notify listeners
   void addPlan(Plan plan) async {
-    _box.put(
+    await _box.put(
       'data',
-      DataModel(plans: [...plans, plan], workoutLogs: workoutLogs),
+      DataModel(
+        plans: [...plans, plan],
+        workoutLogs: workoutLogs,
+        activeWorkout: activeWorkout,
+      ),
     );
     notifyListeners();
   }
@@ -30,7 +37,14 @@ class DataProvider extends ChangeNotifier {
         .where((Plan storedPlan) => storedPlan != plan)
         .toList();
 
-    _box.put('data', DataModel(plans: changedPlans, workoutLogs: workoutLogs));
+    await _box.put(
+      'data',
+      DataModel(
+        plans: changedPlans,
+        workoutLogs: workoutLogs,
+        activeWorkout: activeWorkout,
+      ),
+    );
     notifyListeners();
   }
 
@@ -43,22 +57,34 @@ class DataProvider extends ChangeNotifier {
 
     changedPlans.insert(index, plan);
 
-    _box.put('data', DataModel(plans: changedPlans, workoutLogs: workoutLogs));
+    await _box.put(
+      'data',
+      DataModel(
+        plans: changedPlans,
+        workoutLogs: workoutLogs,
+        activeWorkout: activeWorkout,
+      ),
+    );
     notifyListeners();
   }
 
   // create new data model with updated list of workout logs and notify listeners
   void addLog(Plan plan) async {
-    WorkoutLog workoutLog = WorkoutLog(
-      plan: plan,
-      dateTime: DateTime.now(),
-      id: Uuid().v1().toString(),
-    );
-
-    _box.put(
+    if (activeWorkout == null) {
+      throw Exception("There isn't an active workout to log.");
+    }
+    await _box.put(
       'data',
-      DataModel(plans: plans, workoutLogs: [...workoutLogs, workoutLog]),
+      DataModel(
+        plans: plans,
+        workoutLogs: [
+          ...workoutLogs,
+          activeWorkout!.copyWith(end: DateTime.now()),
+        ],
+        activeWorkout: activeWorkout,
+      ),
     );
+    removeActiveWorkout();
     notifyListeners();
   }
 
@@ -76,7 +102,14 @@ class DataProvider extends ChangeNotifier {
 
     changedLogs.insert(index, workoutLog);
 
-    _box.put('data', DataModel(plans: plans, workoutLogs: changedLogs));
+    await _box.put(
+      'data',
+      DataModel(
+        plans: plans,
+        workoutLogs: changedLogs,
+        activeWorkout: activeWorkout,
+      ),
+    );
     notifyListeners();
   }
 
@@ -86,8 +119,65 @@ class DataProvider extends ChangeNotifier {
         .where((WorkoutLog storedWorkoutLog) => storedWorkoutLog != workoutLog)
         .toList();
 
-    _box.put('data', DataModel(plans: plans, workoutLogs: changedWorkoutLogs));
+    await _box.put(
+      'data',
+      DataModel(
+        plans: plans,
+        workoutLogs: changedWorkoutLogs,
+        activeWorkout: activeWorkout,
+      ),
+    );
     notifyListeners();
+  }
+
+  // add new active workout
+  void addActiveWorkout(Plan plan) async {
+    if (activeWorkout != null) {
+      throw Exception("Cannot replace active workout.");
+    }
+
+    await _box.put(
+      'data',
+      DataModel(
+        plans: plans,
+        workoutLogs: workoutLogs,
+        activeWorkout: WorkoutLog(
+          plan: plan,
+          start: DateTime.now(),
+          end: null,
+          id: Uuid().v1().toString(),
+        ),
+      ),
+    );
+    notifyListeners();
+  }
+
+  void updateActiveWorkout(Plan updatedPlan) async {
+    if (activeWorkout == null) {
+      throw Exception("Active workout cannot be null");
+    }
+
+    await _box.put(
+      'data',
+      DataModel(
+        plans: plans,
+        workoutLogs: workoutLogs,
+        activeWorkout: WorkoutLog(
+          plan: updatedPlan,
+          start: activeWorkout!.start,
+          end: activeWorkout!.end,
+          id: activeWorkout!.id,
+        ),
+      ),
+    );
+    notifyListeners();
+  }
+
+  void removeActiveWorkout() async {
+    await _box.put(
+      'data',
+      DataModel(plans: plans, workoutLogs: workoutLogs, activeWorkout: null),
+    );
   }
 
   // get list of workout logs completed this week
@@ -110,8 +200,8 @@ class DataProvider extends ChangeNotifier {
     return workoutLogs
         .where(
           (WorkoutLog workoutLog) =>
-              workoutLog.dateTime.compareTo(weekStart) >= -1 &&
-              workoutLog.dateTime.compareTo(weekEnd) <= 1,
+              workoutLog.end!.compareTo(weekStart) >= -1 &&
+              workoutLog.end!.compareTo(weekEnd) <= 1,
         )
         .toList();
   }

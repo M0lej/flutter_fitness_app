@@ -93,6 +93,16 @@ class PolishTranslations extends Translations {
   String get yourPlans => "TWOJE PLANY";
 
   @override
+  String get activeWorkout => "AKTYWNY TRENING";
+
+  @override
+  String get onlyOneSessionTitle => "Możesz mieć aktywny tylko jeden trening";
+
+  @override
+  String Function(String) get onlyOneSessionDesc =>
+      (String planName) => 'Ukończ $planName zanim rozpoczniesz następny';
+
+  @override
   String get created => "Utworzono";
 
   @override

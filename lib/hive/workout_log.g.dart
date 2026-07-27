@@ -18,20 +18,23 @@ class WorkoutLogAdapter extends TypeAdapter<WorkoutLog> {
     };
     return WorkoutLog(
       plan: fields[0] as Plan,
-      dateTime: fields[1] as DateTime,
-      id: fields[2] as String,
+      start: fields[1] as DateTime,
+      end: fields[2] as DateTime?,
+      id: fields[3] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, WorkoutLog obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(4)
       ..writeByte(0)
       ..write(obj.plan)
       ..writeByte(1)
-      ..write(obj.dateTime)
+      ..write(obj.start)
       ..writeByte(2)
+      ..write(obj.end)
+      ..writeByte(3)
       ..write(obj.id);
   }
 

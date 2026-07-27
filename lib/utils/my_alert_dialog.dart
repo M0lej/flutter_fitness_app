@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app/data/data_provider.dart';
 import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/themes/app_theme.dart';
 import 'package:provider/provider.dart';
@@ -43,6 +44,7 @@ void closeWithoutSaving(BuildContext appContext) {
             onPressed: () {
               Navigator.pop(context);
               Navigator.pop(appContext);
+              context.read<DataProvider>().removeActiveWorkout();
             },
             label: Text(
               settingsModelValues.translations.yes,

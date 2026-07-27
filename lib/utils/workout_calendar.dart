@@ -40,7 +40,7 @@ class WorkoutCalendar extends StatelessWidget {
                 List<WorkoutLog> workoutLogs = dataModelValues.workoutLogs
                     .where(
                       (WorkoutLog workoutLog) =>
-                          DateUtils.isSameDay(workoutLog.dateTime, date),
+                          DateUtils.isSameDay(workoutLog.end, date),
                     )
                     .toList();
 

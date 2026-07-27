@@ -10,6 +10,8 @@ import 'package:gym_app/utils/appBars/my_app_bar.dart';
 import 'package:gym_app/utils/exercise_card.dart';
 import 'package:gym_app/utils/my_alert_dialog.dart';
 import 'package:gym_app/utils/my_divider.dart';
+import 'package:gym_app/utils/workout_clock.dart';
+import 'package:gym_app/utils/workout_timer.dart';
 import 'package:provider/provider.dart';
 
 class WorkoutTab extends StatefulWidget {
@@ -130,11 +132,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
     if (widget.logToEdit == null) return;
 
     context.read<DataProvider>().editLog(
-      WorkoutLog(
-        plan: _copiedPlan,
-        dateTime: widget.logToEdit!.dateTime,
-        id: widget.logToEdit!.id,
-      ),
+      widget.logToEdit!.copyWith(plan: _copiedPlan),
     );
   }
 
@@ -189,6 +187,11 @@ class _WorkoutTabState extends State<WorkoutTab> {
     Navigator.pop(context);
   }
 
+  void _goBackAndUpdateActiveWorkout() {
+    context.read<DataProvider>().updateActiveWorkout(_copiedPlan);
+    Navigator.pop(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer2<SettingsProvider, DataProvider>(
@@ -199,7 +202,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
               MyAppBar(
                 title: _copiedPlan.name,
                 leading: GestureDetector(
-                  onTap: () => closeWithoutSaving(context),
+                  onTap: _goBackAndUpdateActiveWorkout,
                   child: Icon(Icons.arrow_back),
                 ),
                 actions: [
@@ -218,6 +221,24 @@ class _WorkoutTabState extends State<WorkoutTab> {
                 padding: const EdgeInsets.all(15),
                 sliver: SliverList.list(
                   children: [
+                    // toolbar
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Row(
+                          spacing: 15,
+                          children: [
+                            WorkoutClock(
+                              activeWorkout: dataModelValues.activeWorkout!,
+                            ),
+                            WorkoutTimer(),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    MyDivider(),
+
                     ListView.separated(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),

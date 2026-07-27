@@ -65,7 +65,7 @@ class RecentWorkouts extends StatelessWidget {
                                 ),
                               ),
                               Text(
-                                '${settingsModelValues.translations.formattedDate(workoutLog.dateTime)} | ${workoutLog.plan.exercises.length} ${settingsModelValues.translations.exercises}',
+                                '${settingsModelValues.translations.formattedDate(workoutLog.end!)} | ${workoutLog.plan.exercises.length} ${settingsModelValues.translations.exercises}',
                                 style: TextStyle(
                                   color: Theme.of(
                                     context,

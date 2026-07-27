@@ -1,4 +1,4 @@
-import 'package:gym_app/extensions/double_extension.dart';
+import 'package:gym_app/extensions/double_extensions.dart';
 import 'package:gym_app/hive/weight_unit.dart';
 
 extension WeightParsing on double {

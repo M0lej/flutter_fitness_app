@@ -1,8 +1,10 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:gym_app/data/data_provider.dart';
 import 'package:gym_app/hive/plan.dart';
 import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/tabs/plan_creator_tab.dart';
+import 'package:gym_app/utils/active_workout_card.dart';
 import 'package:gym_app/utils/appBars/my_app_bar.dart';
 import 'package:gym_app/utils/my_divider.dart';
 import 'package:gym_app/utils/plan_card.dart';
@@ -45,6 +47,21 @@ class _PlansTabState extends State<PlansTab> {
                 padding: const EdgeInsets.all(15),
                 sliver: SliverList.list(
                   children: [
+                    if (dataModelValues.activeWorkout != null)
+                      Text(
+                        settingsModelValues.translations.activeWorkout,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary,
+                          fontSize: 13,
+                        ),
+                      ),
+
+                    MyDivider(),
+
+                    ActiveWorkoutCard(),
+
+                    MyDivider(),
+
                     Text(
                       settingsModelValues.translations.yourPlans,
                       style: TextStyle(

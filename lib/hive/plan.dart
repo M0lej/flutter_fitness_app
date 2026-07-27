@@ -1,10 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gym_app/hive/exercise.dart';
 import 'package:gym_app/hive/workout_set.dart';
 import 'package:hive/hive.dart';
-import 'package:uuid/uuid.dart';
 
 part 'plan.g.dart';
 

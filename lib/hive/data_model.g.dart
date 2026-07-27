@@ -19,17 +19,20 @@ class DataModelAdapter extends TypeAdapter<DataModel> {
     return DataModel(
       plans: (fields[0] as List).cast<Plan>(),
       workoutLogs: (fields[1] as List).cast<WorkoutLog>(),
+      activeWorkout: fields[2] as WorkoutLog?,
     );
   }
 
   @override
   void write(BinaryWriter writer, DataModel obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.plans)
       ..writeByte(1)
-      ..write(obj.workoutLogs);
+      ..write(obj.workoutLogs)
+      ..writeByte(2)
+      ..write(obj.activeWorkout);
   }
 
   @override

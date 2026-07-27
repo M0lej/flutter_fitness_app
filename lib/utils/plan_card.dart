@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:gym_app/data/data_provider.dart';
 import 'package:gym_app/hive/plan.dart';
+import 'package:gym_app/hive/workout_log.dart';
 import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/tabs/plan_creator_tab.dart';
 import 'package:gym_app/tabs/workout_tab.dart';
@@ -87,6 +88,44 @@ class _PlanCardState extends State<PlanCard> {
     );
   }
 
+  // if there isn't an active workout then start a new one and navigate to workout tab
+  void _goToWorkoutTab() {
+    WorkoutLog? activeWorkout = context.read<DataProvider>().activeWorkout;
+
+    if (activeWorkout != null) {
+      showDialog(
+        context: context,
+        builder: (context) => Consumer<SettingsProvider>(
+          builder: (context, settingsModelValues, child) => MyAlertDialog(
+            title: settingsModelValues.translations.onlyOneSessionTitle,
+            description: settingsModelValues.translations.onlyOneSessionDesc(
+              activeWorkout.plan.name,
+            ),
+            buttons: [
+              TextButton.icon(
+                onPressed: () => Navigator.pop(context),
+                label: Text(
+                  "Ok",
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+      return;
+    }
+
+    context.read<DataProvider>().addActiveWorkout(widget.plan);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => WorkoutTab(plan: widget.plan)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer2<SettingsProvider, DataProvider>(
@@ -132,12 +171,7 @@ class _PlanCardState extends State<PlanCard> {
                   ),
 
                   IconButton(
-                    onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => WorkoutTab(plan: widget.plan),
-                      ),
-                    ),
+                    onPressed: _goToWorkoutTab,
                     icon: Icon(Icons.play_arrow),
                   ),
 
