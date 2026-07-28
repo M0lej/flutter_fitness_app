@@ -228,9 +228,10 @@ class _WorkoutTabState extends State<WorkoutTab> {
                         child: Row(
                           spacing: 15,
                           children: [
-                            WorkoutClock(
-                              activeWorkout: dataModelValues.activeWorkout!,
-                            ),
+                            if (dataModelValues.activeWorkout != null)
+                              WorkoutClock(
+                                activeWorkout: dataModelValues.activeWorkout!,
+                              ),
                             WorkoutTimer(),
                           ],
                         ),

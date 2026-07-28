@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app/data/timer_provider.dart';
 import 'package:gym_app/extensions/int_extensions.dart';
+import 'package:provider/provider.dart';
 
 class TimerDialog extends StatefulWidget {
-  final Function(double) startTimer;
-  const TimerDialog({super.key, required this.startTimer});
+  const TimerDialog({super.key});
 
   @override
   State<TimerDialog> createState() => _TimerDialogState();
@@ -26,6 +27,15 @@ class _TimerDialogState extends State<TimerDialog> {
     });
   }
 
+  void _startTimer() {
+    Duration duration = Duration(
+      minutes: _time.toInt(),
+      seconds: ((_time - _time.toInt()) * 60).toInt(),
+    );
+
+    context.read<TimerProvider>().start(duration);
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -40,7 +50,7 @@ class _TimerDialogState extends State<TimerDialog> {
           IconButton(onPressed: _addTime, icon: Icon(Icons.add)),
           TextButton.icon(
             onPressed: () {
-              widget.startTimer(_time);
+              _startTimer();
               Navigator.pop(context);
             },
             label: Text("Start"),

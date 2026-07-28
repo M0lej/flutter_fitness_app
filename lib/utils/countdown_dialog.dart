@@ -1,73 +1,32 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:gym_app/data/timer_provider.dart';
 import 'package:gym_app/extensions/int_extensions.dart';
+import 'package:provider/provider.dart';
 
-class CountdownDialog extends StatefulWidget {
-  final Duration elapsed;
-  final Duration duration;
-  final Timer timer;
-
-  const CountdownDialog({
-    super.key,
-    required this.elapsed,
-    required this.duration,
-    required this.timer,
-  });
-
-  @override
-  State<CountdownDialog> createState() => _CountdownDialogState();
-}
-
-class _CountdownDialogState extends State<CountdownDialog> {
-  late Timer _timer;
-  late Duration _elapsed;
-  late DateTime _startedAt;
-
-  @override
-  void initState() {
-    _elapsed = widget.elapsed;
-    _startedAt = DateTime.now();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      setState(() {
-        _elapsed = widget.elapsed + DateTime.now().difference(_startedAt);
-      });
-    });
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
+class CountdownDialog extends StatelessWidget {
+  const CountdownDialog({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final remainingTime = widget.duration > _elapsed
-        ? widget.duration - _elapsed
-        : Duration.zero;
-
-    if (remainingTime == Duration.zero) {
-      Navigator.pop(context);
-    }
-
-    return AlertDialog(
-      title: Text(
-        "${remainingTime.inMinutes.toInt().toTwoDigitString()}:${(remainingTime.inSeconds % 60).toTwoDigitString()}",
-        style: const TextStyle(fontSize: 20),
-        textAlign: TextAlign.center,
-      ),
-      content: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          TextButton.icon(
-            onPressed: () {
-              widget.timer.cancel();
-              Navigator.pop(context);
-            },
-            label: Text("Stop"),
-          ),
-        ],
+    return Consumer<TimerProvider>(
+      builder: (context, timerProviderValues, child) => AlertDialog(
+        title: Text(
+          "${timerProviderValues.remaining.inMinutes.toInt().toTwoDigitString()}:${(timerProviderValues.remaining.inSeconds % 60).toTwoDigitString()}",
+          style: const TextStyle(fontSize: 20),
+          textAlign: TextAlign.center,
+        ),
+        content: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            TextButton.icon(
+              onPressed: () {
+                timerProviderValues.cancel();
+                Navigator.pop(context);
+              },
+              label: Text("Stop"),
+            ),
+          ],
+        ),
       ),
     );
   }

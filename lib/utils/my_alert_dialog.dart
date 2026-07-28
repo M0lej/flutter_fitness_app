@@ -4,6 +4,18 @@ import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/themes/app_theme.dart';
 import 'package:provider/provider.dart';
 
+final GlobalKey<NavigatorState> appNavigatorKey = GlobalKey<NavigatorState>();
+
+Future<T?> showAppDialog<T>({required WidgetBuilder builder}) async {
+  final context = appNavigatorKey.currentContext;
+
+  if (context == null) {
+    return null;
+  }
+
+  return showDialog<T>(context: context, builder: builder);
+}
+
 class MyAlertDialog extends StatelessWidget {
   final String title;
   final String? description;

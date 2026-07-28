@@ -15,6 +15,9 @@ class DataModel {
   @HiveField(2)
   WorkoutLog? activeWorkout;
 
+  @HiveField(3)
+  
+
   DataModel({
     required this.plans,
     required this.workoutLogs,
