@@ -79,8 +79,12 @@ class _AppTabsControllerState extends State<AppTabsController> {
             label: translations.home,
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.notes),
+            icon: const Icon(Icons.article),
             label: translations.plans,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.settings),
+            label: "Settings",
           ),
         ],
       ),

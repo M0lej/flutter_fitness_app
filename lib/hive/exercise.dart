@@ -1,7 +1,5 @@
-import 'package:flutter/foundation.dart';
 import 'package:gym_app/hive/workout_set.dart';
 import 'package:gym_app/hive/weight_unit.dart';
-import 'package:gym_app/settings/settings_provider.dart';
 import 'package:hive/hive.dart';
 
 part 'exercise.g.dart';

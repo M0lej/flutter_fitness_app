@@ -3,8 +3,10 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gym_app/data/data_provider.dart';
 import 'package:gym_app/hive/exercise.dart';
 import 'package:gym_app/hive/plan.dart';
+import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/tabs/exercise_search_tab.dart';
 import 'package:gym_app/themes/app_theme.dart';
+import 'package:gym_app/utils/appBars/my_app_bar.dart';
 import 'package:gym_app/utils/exercise_card.dart';
 import 'package:gym_app/utils/my_alert_dialog.dart';
 import 'package:gym_app/utils/my_divider.dart';
@@ -28,7 +30,7 @@ class _PlanCreatorTabState extends State<PlanCreatorTab> {
   List<Exercise> _exercises = <Exercise>[];
   late Plan? _copiedPlanToEdit;
 
-  Widget _icon = FaIcon(FontAwesomeIcons.dumbbell);
+  Widget _icon = const FaIcon(FontAwesomeIcons.dumbbell);
 
   @override
   void initState() {
@@ -181,102 +183,103 @@ class _PlanCreatorTabState extends State<PlanCreatorTab> {
     Navigator.pop(dialogContext);
   }
 
-
   @override
   Widget build(BuildContext context) {
-    return Consumer2(
-      builder: (context, settingsModelValues, dataModelValues, child) =>
-          Scaffold(
-            appBar: AppBar(
-              title: Text("Plan creator"),
-              leading: IconButton(
-                onPressed: () => closeWithoutSaving(context),
-                icon: Icon(Icons.arrow_back),
+    return Consumer2<SettingsProvider, DataProvider>(
+      builder: (context, settings, appData, child) => CustomScrollView(
+        slivers: [
+          MyAppBar(
+            title: settings.translations.planCreator,
+            actions: [
+              IconButton(
+                onPressed: () => widget.planToEdit != null
+                    ? _editPlan(context)
+                    : _addPlan(context),
+                icon: const Icon(Icons.check, size: 30),
+                style: const ButtonStyle(
+                  padding: WidgetStatePropertyAll(EdgeInsets.all(0)),
+                  backgroundColor: WidgetStatePropertyAll(Colors.red),
+                ),
               ),
-              actions: [
-                // submit plan
-                IconButton(
-                  onPressed: () => widget.planToEdit != null
-                      ? _editPlan(context)
-                      : _addPlan(context),
-                  icon: Icon(Icons.check, size: 30),
-                  style: ButtonStyle(
-                    padding: WidgetStateProperty.all(EdgeInsets.all(0)),
-                    backgroundColor: WidgetStateProperty.all(Colors.red),
+            ],
+            leading: IconButton(
+              onPressed: () => closeWithoutSaving(context),
+              icon: const Icon(Icons.arrow_back),
+            ),
+          ),
+
+          SliverPadding(
+            padding: const EdgeInsets.all(15),
+            sliver: SliverList.list(
+              children: [
+                Text(settings.translations.icon),
+
+                const MyDivider(),
+
+                Row(
+                  children: [
+                    GestureDetector(
+                      onTap: _showChangeIconDialog,
+                      child: MyIcon(size: 150, icon: _icon),
+                    ),
+                  ],
+                ),
+
+                const MyDivider(),
+
+                Text(settings.translations.name),
+
+                const MyDivider(),
+
+                SizedBox(
+                  height: 50,
+                  width: double.infinity,
+                  child: TextFormField(
+                    initialValue: widget.planToEdit?.name,
+                    textAlignVertical: TextAlignVertical.center,
+                    enableSuggestions: false,
+                    onChanged: (value) => _name = value,
+                    decoration: InputDecoration(
+                      hintText:
+                          settings.translations.enterANameForYourWorkoutPlan,
+                      suffixIcon: const Icon(Icons.abc),
+                    ),
+                  ),
+                ),
+
+                const MyDivider(),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(settings.translations.exercises2),
+                    IconButton(
+                      onPressed: _addExercise,
+                      icon: const Icon(Icons.add, color: AppTheme.red),
+                    ),
+                  ],
+                ),
+
+                const MyDivider(),
+
+                ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: _exercises.length,
+                  physics: const NeverScrollableScrollPhysics(),
+                  separatorBuilder: (context, index) => MyDivider(),
+                  itemBuilder: (context, index) => ExerciseCard(
+                    exercise: _exercises[index],
+                    removeExercise: _removeExercise,
+                    isFirst: index == 0,
+                    isLast: index == _exercises.length - 1,
+                    changeOrder: _changeExerciseOrder,
                   ),
                 ),
               ],
             ),
-            body: Padding(
-              padding: const EdgeInsets.all(15),
-              child: ListView(
-                children: [
-                  Text("Icon"),
-
-                  MyDivider(),
-
-                  Row(
-                    children: [
-                      GestureDetector(
-                        onTap: _showChangeIconDialog,
-                        child: MyIcon(size: 150, icon: _icon),
-                      ),
-                    ],
-                  ),
-
-                  MyDivider(),
-
-                  Text("Name"),
-
-                  MyDivider(),
-
-                  SizedBox(
-                    height: 50,
-                    width: double.infinity,
-                    child: TextFormField(
-                      initialValue: widget.planToEdit?.name,
-                      textAlignVertical: TextAlignVertical.center,
-                      enableSuggestions: false,
-                      onChanged: (value) => _name = value,
-                      decoration: InputDecoration(
-                        hintText: "Enter a name for your workout plan",
-                        suffixIcon: Icon(Icons.abc),
-                      ),
-                    ),
-                  ),
-
-                  MyDivider(),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Exercises"),
-                      IconButton(
-                        onPressed: _addExercise,
-                        icon: Icon(Icons.add, color: AppTheme.red),
-                      ),
-                    ],
-                  ),
-
-                  MyDivider(),
-
-                  ListView.separated(
-                    shrinkWrap: true,
-                    itemCount: _exercises.length,
-                    physics: const NeverScrollableScrollPhysics(),
-                    separatorBuilder: (context, index) => MyDivider(),
-                    itemBuilder: (context, index) => ExerciseCard(
-                      exercise: _exercises[index],
-                      removeExercise: _removeExercise,
-                      isFirst: index == 0,
-                      isLast: index == _exercises.length - 1,
-                      changeOrder: _changeExerciseOrder,
-                    ),
-                  ),
-                ],
-              ),
-            ),
           ),
+        ],
+      ),
     );
   }
 }

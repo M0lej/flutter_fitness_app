@@ -12,8 +12,16 @@ import 'package:gym_app/utils/my_icon.dart';
 import 'package:provider/provider.dart';
 
 class PlanCard extends StatefulWidget {
+  final DataProvider appData;
+  final SettingsProvider settings;
+
   final Plan plan;
-  const PlanCard({super.key, required this.plan});
+  const PlanCard({
+    super.key,
+    required this.plan,
+    required this.appData,
+    required this.settings,
+  });
 
   @override
   State<PlanCard> createState() => _PlanCardState();
@@ -33,47 +41,40 @@ class _PlanCardState extends State<PlanCard> {
   void _deletePlan() {
     showDialog(
       context: context,
-      builder: (context) => Consumer2<SettingsProvider, DataProvider>(
-        builder: (context, settingsModelValues, dataModelValues, child) =>
-            MyAlertDialog(
-              title:
-                  '${settingsModelValues.translations.areYouSureYouWantToDelete} "${widget.plan.name}" ?',
-              description:
-                  '\n\n${settingsModelValues.translations.thisActionCannotBeUndone}',
-              buttons: [
-                TextButton.icon(
-                  onPressed: () {
-                    dataModelValues.removePlan(widget.plan);
-                    Navigator.pop(context);
-                  },
-                  label: Text(
-                    settingsModelValues.translations.delete,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                  icon: const Icon(Icons.delete_forever, color: Colors.white),
-                ),
-                TextButton.icon(
-                  onPressed: () => Navigator.pop(context),
-                  label: Text(
-                    settingsModelValues.translations.cancel,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                  icon: const Icon(Icons.cancel, color: Colors.white),
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(
-                      Theme.of(context).cardTheme.color,
-                    ),
-                    side: WidgetStateProperty.all(
-                      BorderSide(color: AppTheme.borderColor),
-                    ),
-                  ),
-                ),
-              ],
+      builder: (context) => MyAlertDialog(
+        title:
+            '${widget.settings.translations.areYouSureYouWantToDelete} "${widget.plan.name}" ?',
+        description:
+            '\n\n${widget.settings.translations.thisActionCannotBeUndone}',
+        buttons: [
+          TextButton.icon(
+            onPressed: () {
+              widget.appData.removePlan(widget.plan);
+              Navigator.pop(context);
+            },
+            label: Text(
+              widget.settings.translations.delete,
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
             ),
+            icon: const Icon(Icons.delete_forever, color: Colors.white),
+          ),
+          TextButton.icon(
+            onPressed: () => Navigator.pop(context),
+            label: Text(
+              widget.settings.translations.cancel,
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
+            icon: const Icon(Icons.cancel, color: Colors.white),
+            style: ButtonStyle(
+              backgroundColor: WidgetStateProperty.all(
+                Theme.of(context).cardTheme.color,
+              ),
+              side: WidgetStateProperty.all(
+                const BorderSide(color: AppTheme.borderColor),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -95,24 +96,20 @@ class _PlanCardState extends State<PlanCard> {
     if (activeWorkout != null) {
       showDialog(
         context: context,
-        builder: (context) => Consumer<SettingsProvider>(
-          builder: (context, settingsModelValues, child) => MyAlertDialog(
-            title: settingsModelValues.translations.onlyOneSessionTitle,
-            description: settingsModelValues.translations.onlyOneSessionDesc(
-              activeWorkout.plan.name,
-            ),
-            buttons: [
-              TextButton.icon(
-                onPressed: () => Navigator.pop(context),
-                label: Text(
-                  "Ok",
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
-              ),
-            ],
+        builder: (context) => MyAlertDialog(
+          title: widget.settings.translations.onlyOneSessionTitle,
+          description: widget.settings.translations.onlyOneSessionDesc(
+            activeWorkout.plan.name,
           ),
+          buttons: [
+            TextButton.icon(
+              onPressed: () => Navigator.pop(context),
+              label: Text(
+                "Ok",
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+              ),
+            ),
+          ],
         ),
       );
       return;
@@ -128,132 +125,127 @@ class _PlanCardState extends State<PlanCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<SettingsProvider, DataProvider>(
-      builder: (context, settingsModelValues, dataModelValues, child) => Card(
-        child: Padding(
-          padding: const EdgeInsets.all(15),
-          child: Column(
-            spacing: 15,
-            children: [
-              // TOP ROW: icon + text + button
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  MyIcon(size: 100, icon: widget.plan.icon),
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(15),
+        child: Column(
+          spacing: 15,
+          children: [
+            // TOP ROW: icon + text + button
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                MyIcon(size: 100, icon: widget.plan.icon),
 
-                  const SizedBox(width: 20),
+                const SizedBox(width: 20),
 
-                  // TEXT AREA
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      spacing: 5,
-                      children: [
-                        AutoSizeText(
-                          widget.plan.name,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          maxFontSize: 20,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
+                // TEXT AREA
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    spacing: 5,
+                    children: [
+                      AutoSizeText(
+                        widget.plan.name,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        maxFontSize: 20,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
                         ),
-
-                        Text(
-                          '${widget.plan.exercises.length} ${settingsModelValues.translations.exercises}',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  IconButton(
-                    onPressed: _goToWorkoutTab,
-                    icon: Icon(Icons.play_arrow),
-                  ),
-
-                  // MENU BUTTON
-                  IconButton(
-                    onPressed: _switchPropertiesPanel,
-                    icon: const Icon(Icons.more_horiz),
-                  ),
-                ],
-              ),
-
-              // DIVIDER
-              Divider(
-                thickness: 0.5,
-                height: 1,
-                color: Theme.of(context).focusColor,
-              ),
-
-              // DATE ROW
-              Row(
-                spacing: 5,
-                children: [
-                  const Icon(Icons.calendar_month_outlined, size: 20),
-                  Expanded(
-                    child: Text(
-                      '${settingsModelValues.translations.created} '
-                      '${settingsModelValues.translations.formattedDate(widget.plan.creationDate)} '
-                      '${widget.plan.creationDate.year}',
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary,
-                        fontSize: 11,
                       ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
 
-              // EXPANDED ACTIONS
-              if (_propertiesExpanded)
-                Row(
-                  spacing: 10,
-                  children: [
-                    TextButton.icon(
-                      onPressed: _deletePlan,
-                      icon: const Icon(
-                        Icons.delete_forever,
-                        color: Colors.white,
-                      ),
-                      label: Text(
-                        settingsModelValues.translations.delete,
+                      Text(
+                        '${widget.plan.exercises.length} ${widget.settings.translations.exercises}',
                         style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
+                          color: Theme.of(context).colorScheme.secondary,
                         ),
                       ),
-                    ),
+                    ],
+                  ),
+                ),
 
-                    TextButton.icon(
-                      onPressed: _editPlan,
-                      icon: Icon(
-                        Icons.edit,
+                IconButton(
+                  onPressed: _goToWorkoutTab,
+                  icon: const Icon(Icons.play_arrow),
+                ),
+
+                // MENU BUTTON
+                IconButton(
+                  onPressed: _switchPropertiesPanel,
+                  icon: const Icon(Icons.more_horiz),
+                ),
+              ],
+            ),
+
+            // DIVIDER
+            Divider(
+              thickness: 0.5,
+              height: 1,
+              color: Theme.of(context).focusColor,
+            ),
+
+            // DATE ROW
+            Row(
+              spacing: 5,
+              children: [
+                const Icon(Icons.calendar_month_outlined, size: 20),
+                Expanded(
+                  child: Text(
+                    '${widget.settings.translations.created} '
+                    '${widget.settings.translations.formattedDate(widget.plan.creationDate)} '
+                    '${widget.plan.creationDate.year}',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.secondary,
+                      fontSize: 11,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+
+            // EXPANDED ACTIONS
+            if (_propertiesExpanded)
+              Row(
+                spacing: 10,
+                children: [
+                  TextButton.icon(
+                    onPressed: _deletePlan,
+                    icon: const Icon(Icons.delete_forever, color: Colors.white),
+                    label: Text(
+                      widget.settings.translations.delete,
+                      style: TextStyle(
                         color: Theme.of(context).colorScheme.primary,
                       ),
-                      label: Text(
-                        "Edit",
-                        style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                      ),
-                      style: ButtonStyle(
-                        backgroundColor: WidgetStateProperty.all(
-                          Theme.of(context).cardTheme.color,
-                        ),
-                        side: WidgetStateProperty.all(
-                          BorderSide(color: AppTheme.borderColor),
-                        ),
+                    ),
+                  ),
+
+                  TextButton.icon(
+                    onPressed: _editPlan,
+                    icon: Icon(
+                      Icons.edit,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    label: Text(
+                      "Edit",
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
-                  ],
-                ),
-            ],
-          ),
+                    style: ButtonStyle(
+                      backgroundColor: WidgetStateProperty.all(
+                        Theme.of(context).cardTheme.color,
+                      ),
+                      side: WidgetStateProperty.all(
+                        BorderSide(color: AppTheme.borderColor),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+          ],
         ),
       ),
     );

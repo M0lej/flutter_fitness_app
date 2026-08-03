@@ -147,4 +147,134 @@ class PolishTranslations extends Translations {
 
   @override
   String get no => "Nie";
+
+  @override
+  String get planCreator => "Kreator planów";
+
+  @override
+  String get icon => "Ikona";
+
+  @override
+  String get name => "Nazwa";
+
+  @override
+  String get enterANameForYourWorkoutPlan => "Podaj nazwe dla twojego planu";
+
+  @override
+  String get exercises2 => "Ćwiczenia";
+
+  @override
+  String get addExercise => "Dodaj ćwiczenie";
+
+  @override
+  String get exerciseLibrary => "Biblioteka ćwiczeń";
+
+  @override
+  String get myExercises => "Moje ćwiczenia";
+
+  @override
+  String get searchExercise => "Szukaj ćwiczenia...";
+
+  @override
+  String get exerciseCreator => "Kreator ćwiczeń";
+
+  @override
+  String get exerciseName => "Nazwa ćwiczenia";
+
+  @override
+  String get primaryMuscles => "Główne mięśnie";
+
+  @override
+  String get secondaryMuscles => "Mięśnie pomocnicze";
+
+  @override
+  String get equipment => "Sprzęt";
+
+  @override
+  Map<String, Set<String>> get musclesCategorized => {
+    // Klatka piersiowa
+    'Klatka piersiowa': {
+      'Klatka piersiowa',
+      'Górna część klatki piersiowej',
+      'Dolna część klatki piersiowej',
+    },
+
+    // Plecy
+    'Plecy': {
+      'Mięśnie najszersze grzbietu',
+      'Górna część pleców',
+      'Środkowa część pleców',
+      'Dolna część pleców',
+      'Mięśnie czworoboczne',
+    },
+
+    // Barki
+    'Barki': {'Przedni akton', 'Boczny akton', 'Tylny akton'},
+
+    // Ramiona
+    'Ramiona': {
+      'Biceps',
+      'Triceps',
+      'Przedramiona',
+      'Mięsień ramienny',
+      'Mięsień ramienno-promieniowy',
+    },
+
+    // Core
+    'Mięśnie brzucha': {
+      'Mięśnie proste brzucha',
+      'Mięśnie skośne brzucha',
+      'Mięsień poprzeczny brzucha',
+      'Prostowniki grzbietu',
+    },
+
+    // Nogi
+    'Nogi': {
+      'Mięśnie czworogłowe uda',
+      'Mięśnie dwugłowe uda',
+      'Pośladki',
+      'Zginacze bioder',
+      'Przywodziciele',
+      'Odwodziciele',
+      'Łydki',
+      'Mięsień piszczelowy przedni',
+    },
+
+    // Szyja
+    'Szyja': {'Szyja'},
+  };
+
+  @override
+  Set<String> get equipmentSet => {
+    'Sztanga',
+    'Hantle',
+    'Kettlebell',
+
+    'Wyciąg',
+    'Maszyna',
+    'Suwnica Smitha',
+
+    'Ławka',
+    'Ławka skośna dodatnia',
+    'Ławka skośna ujemna',
+
+    'Drążek',
+    'Poręcze',
+
+    'Gryf łamany',
+    'Trap Bar',
+
+    'Guma oporowa',
+    'Taśmy TRX',
+
+    'Piłka lekarska',
+    'Piłka gimnastyczna',
+
+    'Sanki treningowe',
+    'Landmine',
+
+    'Masa własnego ciała',
+
+    'Inne',
+  };
 }

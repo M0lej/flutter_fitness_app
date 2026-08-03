@@ -13,9 +13,12 @@ class HomeTabAppBar extends StatelessWidget {
 
     return SliverSafeArea(
       sliver: SliverAppBar(
+        expandedHeight: 85,
+        toolbarHeight: 85,
+        collapsedHeight: 85,
         actionsPadding: const EdgeInsets.only(right: 5),
         title: Padding(
-          padding: const EdgeInsets.only(left: 5),
+          padding: const EdgeInsets.only(top: 12, left: 5),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -45,19 +48,6 @@ class HomeTabAppBar extends StatelessWidget {
         ),
         backgroundColor: Colors.transparent,
         floating: true,
-        actions: [
-          // settings
-          IconButton(
-            onPressed: () => print("ds"),
-            icon: Icon(Icons.settings_outlined),
-          ),
-
-          //notifications
-          IconButton(
-            onPressed: () => print("ds"),
-            icon: Icon(Icons.notifications_outlined),
-          ),
-        ],
       ),
     );
   }

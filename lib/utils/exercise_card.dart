@@ -27,7 +27,9 @@ class ExerciseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // get rep counts
-    List<int> reps = exercise.workoutSets.map((WorkoutSet workoutSet) => workoutSet.reps).toList();
+    List<int> reps = exercise.workoutSets
+        .map((WorkoutSet workoutSet) => workoutSet.reps)
+        .toList();
 
     // get unique rep labels for ex if I have list of reps like this [12,12,10,5] I would get [12,10,5]
     Set<int> uniqueReps = reps.toSet();
@@ -45,10 +47,11 @@ class ExerciseCard extends StatelessWidget {
         Row(
           spacing: 15,
           children: [
-            MyImage(
-              size: 150,
-              path: './assets/exercises/${exercise.images[0]}',
-            ),
+            if (exercise.images.isNotEmpty)
+              MyImage(
+                size: 150,
+                path: './assets/exercises/${exercise.images[0]}',
+              ),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,8 +62,13 @@ class ExerciseCard extends StatelessWidget {
                     maxFontSize: 15,
                     style: TextStyle(fontSize: 15),
                   ),
-                  Text(
-                    exercise.primaryMuscles?.join(", ") ?? "",
+
+                  AutoSizeText(
+                    [
+                      ...exercise.primaryMuscles ?? [],
+                      ...exercise.secondaryMuscles ?? [],
+                    ].join(", "),
+                    maxLines: 2,
                     style: TextStyle(
                       fontSize: 12,
                       color: Theme.of(context).colorScheme.secondary,

@@ -79,5 +79,21 @@ class AppTheme {
       backgroundColor: backgroundBlack,
       scrolledUnderElevation: 0,
     ),
+
+    segmentedButtonTheme: SegmentedButtonThemeData(
+      style: const ButtonStyle(
+        backgroundColor: WidgetStateProperty.fromMap(
+          <WidgetStatesConstraint, Color>{WidgetState.selected: AppTheme.red},
+        ),
+        foregroundColor: WidgetStateProperty.fromMap(
+          <WidgetStatesConstraint, Color>{WidgetState.selected: Colors.white},
+        ),
+        side: WidgetStateBorderSide.fromMap(
+          <WidgetStatesConstraint, BorderSide>{
+            WidgetState.selected: BorderSide(width: 0),
+          },
+        ),
+      ),
+    ),
   );
 }

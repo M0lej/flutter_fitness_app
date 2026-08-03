@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app/data/data_provider.dart';
-import 'package:gym_app/hive/data_model.dart';
 import 'package:gym_app/hive/workout_log.dart';
 import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/utils/progress_bar.dart';

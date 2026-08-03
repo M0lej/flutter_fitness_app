@@ -18,11 +18,16 @@ class MyAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SliverSafeArea(
       sliver: SliverAppBar(
-        leading: leading,
-        actionsPadding: const EdgeInsets.only(right: 5),
+        leading: leading != null
+            ? Padding(padding: const EdgeInsets.only(top: 12), child: leading)
+            : null,
+        expandedHeight: 85,
+        toolbarHeight: 85,
+        collapsedHeight: 85,
+        actionsPadding: const EdgeInsets.only(right: 5, top: 12),
         automaticallyImplyLeading: automaticallyImplyLeading,
         title: Padding(
-          padding: const EdgeInsets.only(left: 5),
+          padding: const EdgeInsets.only(top: 12, left: 5),
           child: Text(
             title,
             style: TextStyle(

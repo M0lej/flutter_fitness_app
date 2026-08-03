@@ -125,6 +125,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
   }
 
   void _logWorkout() {
+    print('Logging workout');
     context.read<DataProvider>().addLog(_copiedPlan);
   }
 
@@ -188,7 +189,12 @@ class _WorkoutTabState extends State<WorkoutTab> {
   }
 
   void _goBackAndUpdateActiveWorkout() {
-    context.read<DataProvider>().updateActiveWorkout(_copiedPlan);
+    DataProvider dataModelValues = context.read<DataProvider>();
+
+    if (dataModelValues.activeWorkout != null) {
+      dataModelValues.updateActiveWorkout(_copiedPlan);
+    }
+
     Navigator.pop(context);
   }
 
@@ -222,21 +228,22 @@ class _WorkoutTabState extends State<WorkoutTab> {
                 sliver: SliverList.list(
                   children: [
                     // toolbar
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(15),
-                        child: Row(
-                          spacing: 15,
-                          children: [
-                            if (dataModelValues.activeWorkout != null)
-                              WorkoutClock(
-                                activeWorkout: dataModelValues.activeWorkout!,
-                              ),
-                            WorkoutTimer(),
-                          ],
+                    if (widget.logToEdit == null)
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(15),
+                          child: Row(
+                            spacing: 15,
+                            children: [
+                              if (dataModelValues.activeWorkout != null)
+                                WorkoutClock(
+                                  activeWorkout: dataModelValues.activeWorkout!,
+                                ),
+                              WorkoutTimer(),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
 
                     MyDivider(),
 

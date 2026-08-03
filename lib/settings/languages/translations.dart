@@ -47,4 +47,24 @@ abstract class Translations {
 
   String get yes;
   String get no;
+
+  String get planCreator;
+  String get icon;
+  String get name;
+  String get enterANameForYourWorkoutPlan;
+  String get exercises2;
+
+  String get addExercise;
+  String get exerciseLibrary;
+  String get myExercises;
+  String get searchExercise;
+
+  String get exerciseCreator;
+  String get exerciseName;
+  String get primaryMuscles;
+  String get secondaryMuscles;
+  String get equipment;
+
+  Map<String, Set<String>> get musclesCategorized;
+  Set<String> get equipmentSet;
 }

@@ -7,6 +7,7 @@ import 'package:gym_app/utils/custom_card.dart';
 import 'package:gym_app/utils/my_divider.dart';
 import 'package:gym_app/utils/next_workout.dart';
 import 'package:gym_app/utils/recent_workouts.dart';
+import 'package:gym_app/utils/stats_card/stats_card.dart';
 import 'package:gym_app/utils/status_bar.dart';
 import 'package:gym_app/utils/workout_calendar.dart';
 import 'package:provider/provider.dart';
@@ -19,51 +20,58 @@ class HomeTab extends StatelessWidget {
     // provide settings and app data using providers
 
     return Consumer2<SettingsProvider, DataProvider>(
-      builder: (context, settingModelValues, dataModelValues, child) =>
-          CustomScrollView(
-            slivers: [
-              HomeTabAppBar(),
-              SliverPadding(
-                padding: const EdgeInsets.all(15),
-                sliver: SliverList.list(
+      builder: (context, settings, appData, child) => CustomScrollView(
+        slivers: [
+          const HomeTabAppBar(),
+          SliverPadding(
+            padding: const EdgeInsets.all(15),
+            sliver: SliverList.list(
+              children: [
+                // show next workout plan if there any created
+                if (appData.plans.isNotEmpty)
+                  CustomCard(
+                    title: settings.translations.nextWorkout,
+                    children: [NextWorkout()],
+                  ),
+
+                const MyDivider(),
+                // workout calendar card
+                CustomCard(
+                  title: settings.translations.thisWeek,
                   children: [
-                    // show next workout plan if there any created
-                    if (dataModelValues.plans.isNotEmpty)
-                      CustomCard(
-                        title: settingModelValues.translations.nextWorkout,
-                        children: [NextWorkout()],
-                      ),
-
-                    MyDivider(),
-                    // workout calendar card
-                    CustomCard(
-                      title: settingModelValues.translations.thisWeek,
-                      children: [WorkoutCalendar(), StatusBar()],
-                    ),
-
-                    MyDivider(),
-                    // show recent workout logs card if there were any completed
-                    if (dataModelValues.getWorkoutLogsFromThisWeek().isNotEmpty)
-                      CustomCard(
-                        title: settingModelValues.translations.recentWorkouts,
-                        children: [RecentWorkouts()],
-                      ),
-                    TextButton(
-                      onPressed: () {
-                        List<WorkoutLog> workoutLogs = context
-                            .read<DataProvider>()
-                            .workoutLogs;
-                        for (WorkoutLog workoutLog in workoutLogs) {
-                          context.read<DataProvider>().removeLog(workoutLog);
-                        }
-                      },
-                      child: Text("Wyczyść logi"),
-                    ),
+                    WorkoutCalendar(appData: appData, settings: settings),
+                    StatusBar(),
                   ],
                 ),
-              ),
-            ],
+
+                const MyDivider(),
+                // show recent workout logs card if there were any completed
+                if (appData.getWorkoutLogsFromThisWeek().isNotEmpty)
+                  CustomCard(
+                    title: settings.translations.recentWorkouts,
+                    children: [RecentWorkouts()],
+                  ),
+                TextButton(
+                  onPressed: () {
+                    List<WorkoutLog> workoutLogs = context
+                        .read<DataProvider>()
+                        .workoutLogs;
+                    for (WorkoutLog workoutLog in workoutLogs) {
+                      context.read<DataProvider>().removeLog(workoutLog);
+                    }
+                  },
+                  child: Text("Wyczyść logi"),
+                ),
+
+                const MyDivider(),
+
+                // stats
+                StatsCard(appData: appData, settings: settings),
+              ],
+            ),
           ),
+        ],
+      ),
     );
   }
 }

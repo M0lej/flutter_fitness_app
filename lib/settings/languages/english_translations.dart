@@ -148,4 +148,114 @@ class EnglishTranslations extends Translations {
 
   @override
   String get no => "No";
+
+  @override
+  String get planCreator => "Plan creator";
+
+  @override
+  String get icon => "Icon";
+
+  @override
+  String get name => "Name";
+
+  @override
+  String get enterANameForYourWorkoutPlan =>
+      "Enter a name for your workout plan";
+
+  @override
+  String get exercises2 => "Exercises";
+
+  @override
+  String get addExercise => "Add exercise";
+
+  @override
+  String get exerciseLibrary => "Exercise library";
+
+  @override
+  String get myExercises => "My exercises";
+
+  @override
+  String get searchExercise => "Search exercise...";
+
+  @override
+  String get exerciseCreator => "Exercise creator";
+
+  @override
+  String get exerciseName => "Exercise name";
+
+  @override
+  String get primaryMuscles => "Primary muscles";
+
+  @override
+  String get secondaryMuscles => "Secondary muscles";
+
+  @override
+  String get equipment => "Equipment";
+
+  @override
+  Map<String, Set<String>> get musclesCategorized => {
+    // Chest
+    'Chest': {'Chest', 'Upper Chest', 'Lower Chest'},
+
+    // Back
+    'Back': {'Lats', 'Upper Back', 'Middle Back', 'Lower Back', 'Traps'},
+
+    // Shoulders
+    'Shoulders': {'Front Delts', 'Side Delts', 'Rear Delts'},
+
+    // Arms
+    'Arms': {'Biceps', 'Triceps', 'Forearms', 'Brachialis', 'Brachioradialis'},
+
+    // Core
+    'Core': {'Abs', 'Obliques', 'Transverse Abdominis', 'Erector Spinae'},
+
+    // Legs
+    'Legs': {
+      'Quadriceps',
+      'Hamstrings',
+      'Glutes',
+      'Hip Flexors',
+      'Adductors',
+      'Abductors',
+      'Calves',
+      'Tibialis Anterior',
+    },
+
+    // Neck
+    'Neck': {'Neck'},
+  };
+
+  @override
+  Set<String> get equipmentSet => {
+    'Barbell',
+    'Dumbbells',
+    'Kettlebell',
+
+    'Cable',
+    'Machine',
+    'Smith Machine',
+
+    'Bench',
+    'Incline Bench',
+    'Decline Bench',
+
+    'Pull-Up Bar',
+    'Dip Station',
+
+    'EZ Bar',
+    'Trap Bar',
+
+    'Resistance Band',
+    'Suspension Trainer',
+
+    'Medicine Ball',
+    'Swiss Ball',
+
+    'Sled',
+    'Landmine',
+
+    'Bodyweight',
+
+    'Other',
+  };
 }

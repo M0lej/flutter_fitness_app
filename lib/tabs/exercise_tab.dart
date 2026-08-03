@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:gym_app/extensions/weight_extensions.dart';
 import 'package:gym_app/hive/exercise.dart';
@@ -25,7 +26,7 @@ class ExerciseTab extends StatefulWidget {
 }
 
 class _ExerciseTabState extends State<ExerciseTab> {
-  late Timer _timer;
+  Timer? _timer;
 
   final String _defaultPath = './assets/exercises';
   String _path = "./assets/question-mark.png";
@@ -45,21 +46,23 @@ class _ExerciseTabState extends State<ExerciseTab> {
 
     super.initState();
 
-    _path = '$_defaultPath/${widget.exercise.images[0]}';
+    if (widget.exercise.images.isNotEmpty) {
+      _path = '$_defaultPath/${widget.exercise.images[0]}';
 
-    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        _imageIndex = _imageIndex == 0 ? 1 : 0;
-        _path = _imageIndex == 0
-            ? '$_defaultPath/${widget.exercise.images[1]}'
-            : '$_defaultPath/${widget.exercise.images[0]}';
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        setState(() {
+          _imageIndex = _imageIndex == 0 ? 1 : 0;
+          _path = _imageIndex == 0
+              ? '$_defaultPath/${widget.exercise.images[1]}'
+              : '$_defaultPath/${widget.exercise.images[0]}';
+        });
       });
-    });
+    }
   }
 
   @override
   void dispose() {
-    _timer.cancel();
+    _timer?.cancel();
     for (final controller in _weightControllers) {
       controller.dispose();
     }
@@ -153,10 +156,26 @@ class _ExerciseTabState extends State<ExerciseTab> {
             padding: const EdgeInsets.all(15),
             sliver: SliverList.list(
               children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Image.asset(_path),
-                ),
+                if (widget.exercise.images.isNotEmpty)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.asset(_path),
+                  ),
+
+                MyDivider(),
+
+                if (widget.exercise.instructions != null)
+                  const Text(
+                    "Instructions",
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                  ),
+
+                if (widget.exercise.instructions != null)
+                  AutoSizeText(
+                    widget.exercise.instructions?.join('\n') ?? '',
+                    style: TextStyle(fontSize: 13),
+                  ),
+
                 Row(
                   spacing: 15,
                   children: [
@@ -166,11 +185,11 @@ class _ExerciseTabState extends State<ExerciseTab> {
                       items: [
                         DropdownMenuItem(
                           value: WeightUnit.kg,
-                          child: Text("kg"),
+                          child: const Text("kg"),
                         ),
                         DropdownMenuItem(
                           value: WeightUnit.lbs,
-                          child: Text("lbs"),
+                          child: const Text("lbs"),
                         ),
                       ],
                       onChanged: _onWeightUnitChange,
@@ -213,7 +232,12 @@ class _ExerciseTabState extends State<ExerciseTab> {
                                     ),
                                     Text(
                                       settingsModelValues.translations.reps,
-                                      style: TextStyle(fontSize: 12),
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.primary,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -237,13 +261,26 @@ class _ExerciseTabState extends State<ExerciseTab> {
                                             textAlign: TextAlign.center,
                                           ),
                                         ),
-                                        Text(widget.exercise.weightUnit.name),
+                                        Text(
+                                          widget.exercise.weightUnit.name,
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.primary,
+                                          ),
+                                        ),
                                       ],
                                     ),
 
                                     Text(
                                       settingsModelValues.translations.weight,
-                                      style: TextStyle(fontSize: 12),
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        color: Theme.of(
+                                          context,
+                                        ).colorScheme.primary,
+                                      ),
                                     ),
                                   ],
                                 ),

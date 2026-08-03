@@ -1,55 +1,70 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app/hive/data_model.dart';
+import 'package:gym_app/hive/exercise.dart';
+import 'package:gym_app/hive/exercise_stats.dart';
+import 'package:gym_app/hive/month_stats.dart';
 import 'package:gym_app/hive/plan.dart';
+import 'package:gym_app/hive/weight_unit.dart';
 import 'package:gym_app/hive/workout_log.dart';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
+import 'package:collection/collection.dart';
 
 class DataProvider extends ChangeNotifier {
-  // get box
-  Box<DataModel> get _box => Hive.box('data');
+  final Box<DataModel> _box = Hive.box('data');
+
+  late DataModel _data;
+
+  DataProvider() {
+    _data = _box.get('data') ?? DataModel.empty();
+  }
+
+  DataModel get data => _data;
 
   // get all plans
-  List<Plan> get plans => _box.get('data')?.plans ?? [];
+  List<Plan> get plans => _data.plans;
 
   // get all workout logs
-  List<WorkoutLog> get workoutLogs => _box.get('data')?.workoutLogs ?? [];
+  List<WorkoutLog> get workoutLogs => _data.workoutLogs;
 
   // get active workout plan
-  WorkoutLog? get activeWorkout => _box.get('data')?.activeWorkout;
+  WorkoutLog? get activeWorkout => _data.activeWorkout;
 
-  // create new data model with updated list of plans and notify listeners
-  void addPlan(Plan plan) async {
-    await _box.put(
-      'data',
-      DataModel(
-        plans: [...plans, plan],
-        workoutLogs: workoutLogs,
-        activeWorkout: activeWorkout,
-      ),
-    );
+  // get custom exercises
+  List<Exercise> get customExercises => _data.customExercises;
+
+  // get months stats
+  List<MonthStats> get monthsStats => _data.monthsStats;
+
+  // get completed workouts count
+  int get completedWorkoutsCount => _data.completedWorkoutsCount;
+
+  Future<void> _save() async {
+    await _box.put('data', _data);
     notifyListeners();
   }
 
+  // create new data model with updated list of plans and notify listeners
+  Future<void> addPlan(Plan plan) async {
+    _data.plans.add(plan);
+
+    await _save();
+  }
+
   // same as above
-  void removePlan(Plan plan) async {
+  Future<void> removePlan(Plan plan) async {
     List<Plan> changedPlans = plans
         .where((Plan storedPlan) => storedPlan != plan)
         .toList();
 
-    await _box.put(
-      'data',
-      DataModel(
-        plans: changedPlans,
-        workoutLogs: workoutLogs,
-        activeWorkout: activeWorkout,
-      ),
-    );
-    notifyListeners();
+    _data.plans = changedPlans;
+    await _save();
   }
 
-  void editPlan(Plan plan) async {
+  Future<void> editPlan(Plan plan) async {
     int index = plans.indexWhere((Plan storedPlan) => storedPlan.id == plan.id);
+
+    if (index == -1) return;
 
     List<Plan> changedPlans = plans
         .where((Plan storedPlan) => storedPlan.id != plan.id)
@@ -57,42 +72,62 @@ class DataProvider extends ChangeNotifier {
 
     changedPlans.insert(index, plan);
 
-    await _box.put(
-      'data',
-      DataModel(
-        plans: changedPlans,
-        workoutLogs: workoutLogs,
-        activeWorkout: activeWorkout,
-      ),
-    );
-    notifyListeners();
+    _data.plans = changedPlans;
+    await _save();
   }
 
   // create new data model with updated list of workout logs and notify listeners
-  void addLog(Plan plan) async {
+  // also clears old logs
+  Future<void> addLog(Plan plan) async {
     if (activeWorkout == null) {
       throw Exception("There isn't an active workout to log.");
     }
-    await _box.put(
-      'data',
-      DataModel(
-        plans: plans,
-        workoutLogs: [
-          ...workoutLogs,
-          activeWorkout!.copyWith(end: DateTime.now()),
-        ],
-        activeWorkout: activeWorkout,
+
+    List<WorkoutLog> modifiedWorkoutLogs = workoutLogs;
+
+    // if there are more that 10 workout logs stored then remove ones that are older than 30 days to save space
+    if (modifiedWorkoutLogs.length >= 10) {
+      modifiedWorkoutLogs = modifiedWorkoutLogs
+          .where(
+            (WorkoutLog workoutLog) =>
+                DateTime.now().difference(workoutLog.end!).inDays >= 30,
+          )
+          .toList();
+    }
+
+    MonthStats currentMonthStats =
+        monthsStats.firstWhereOrNull(
+          (MonthStats monthStats) =>
+              monthStats.date.month == DateTime.now().month,
+        ) ??
+        MonthStats.empty();
+
+    currentMonthStats.update(plan.exercises);
+
+    _data.workoutLogs = [
+      ...modifiedWorkoutLogs,
+      activeWorkout!.copyWith(end: DateTime.now()),
+    ];
+    _data.activeWorkout = null;
+    _data.monthsStats = [
+      ...monthsStats.where(
+        (MonthStats monthsStats) =>
+            monthsStats.date.month != currentMonthStats.date.month,
       ),
-    );
-    removeActiveWorkout();
-    notifyListeners();
+      currentMonthStats,
+    ];
+    _data.completedWorkoutsCount += 1;
+
+    await _save();
   }
 
   // update existing workout log
-  void editLog(WorkoutLog workoutLog) async {
+  Future<void> editLog(WorkoutLog workoutLog) async {
     int index = workoutLogs.indexWhere(
       (WorkoutLog storedWorkoutLog) => storedWorkoutLog.id == workoutLog.id,
     );
+
+    if (index == -1) return;
 
     List<WorkoutLog> changedLogs = workoutLogs
         .where(
@@ -102,82 +137,100 @@ class DataProvider extends ChangeNotifier {
 
     changedLogs.insert(index, workoutLog);
 
-    await _box.put(
-      'data',
-      DataModel(
-        plans: plans,
-        workoutLogs: changedLogs,
-        activeWorkout: activeWorkout,
-      ),
-    );
-    notifyListeners();
+    MonthStats monthStats =
+        monthsStats.firstWhereOrNull(
+          (MonthStats monthStats) =>
+              monthStats.date.month == workoutLog.end!.month,
+        ) ??
+        MonthStats.empty();
+
+    List<MonthStats> updatedMonthsStats = monthsStats
+        .where((MonthStats m) => m != monthStats)
+        .toList();
+
+    monthStats.update(workoutLog.plan.exercises);
+    updatedMonthsStats.add(monthStats);
+
+    _data.workoutLogs = changedLogs;
+    _data.monthsStats = updatedMonthsStats;
+
+    await _save();
   }
 
   // same as above
-  void removeLog(WorkoutLog workoutLog) async {
+  Future<void> removeLog(WorkoutLog workoutLog) async {
     List<WorkoutLog> changedWorkoutLogs = workoutLogs
         .where((WorkoutLog storedWorkoutLog) => storedWorkoutLog != workoutLog)
         .toList();
 
-    await _box.put(
-      'data',
-      DataModel(
-        plans: plans,
-        workoutLogs: changedWorkoutLogs,
-        activeWorkout: activeWorkout,
-      ),
-    );
-    notifyListeners();
+    _data.workoutLogs = changedWorkoutLogs;
+
+    await _save();
   }
 
   // add new active workout
-  void addActiveWorkout(Plan plan) async {
+  Future<void> addActiveWorkout(Plan plan) async {
     if (activeWorkout != null) {
       throw Exception("Cannot replace active workout.");
     }
 
-    await _box.put(
-      'data',
-      DataModel(
-        plans: plans,
-        workoutLogs: workoutLogs,
-        activeWorkout: WorkoutLog(
-          plan: plan,
-          start: DateTime.now(),
-          end: null,
-          id: Uuid().v1().toString(),
-        ),
-      ),
+    _data.activeWorkout = WorkoutLog(
+      plan: plan,
+      start: DateTime.now(),
+      end: null,
+      id: Uuid().v1().toString(),
     );
-    notifyListeners();
+
+    await _save();
   }
 
-  void updateActiveWorkout(Plan updatedPlan) async {
+  Future<void> removeActiveWorkout() async {
+    _data.activeWorkout = null;
+
+    await _save();
+  }
+
+  Future<void> updateActiveWorkout(Plan updatedPlan) async {
     if (activeWorkout == null) {
       throw Exception("Active workout cannot be null");
     }
 
-    await _box.put(
-      'data',
-      DataModel(
-        plans: plans,
-        workoutLogs: workoutLogs,
-        activeWorkout: WorkoutLog(
-          plan: updatedPlan,
-          start: activeWorkout!.start,
-          end: activeWorkout!.end,
-          id: activeWorkout!.id,
-        ),
-      ),
+    _data.activeWorkout = WorkoutLog(
+      plan: updatedPlan,
+      start: activeWorkout!.start,
+      end: activeWorkout!.end,
+      id: activeWorkout!.id,
     );
-    notifyListeners();
+
+    await _save();
   }
 
-  void removeActiveWorkout() async {
-    await _box.put(
-      'data',
-      DataModel(plans: plans, workoutLogs: workoutLogs, activeWorkout: null),
+  // add new exercise
+  Future<void> addExercise(
+    String name,
+    String equipment,
+    List<String> primaryMuscles,
+    List<String> secondaryMuscles,
+  ) async {
+    Exercise newExercise = Exercise(
+      name: name,
+      force: null,
+      level: null,
+      mechanic: null,
+      equipment: equipment,
+      primaryMuscles: primaryMuscles,
+      secondaryMuscles: secondaryMuscles,
+      instructions: null,
+      category: "custom",
+      workoutSets: [],
+      weightUnit: WeightUnit.kg,
+      images: [],
+      id: Uuid().v1().toString(),
     );
+
+    _data.customExercises.add(newExercise);
+
+    await _save();
   }
 
   // get list of workout logs completed this week

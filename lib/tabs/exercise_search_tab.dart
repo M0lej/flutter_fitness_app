@@ -1,10 +1,16 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:gym_app/data/data_provider.dart';
 import 'package:gym_app/data/exercises.dart';
 import 'package:gym_app/hive/exercise.dart';
-import 'package:gym_app/themes/app_theme.dart';
+import 'package:gym_app/settings/languages/translations.dart';
+import 'package:gym_app/settings/settings_provider.dart';
+import 'package:gym_app/tabs/exercise_creator_tab.dart';
+import 'package:gym_app/utils/appBars/my_app_bar.dart';
+import 'package:gym_app/utils/exercise_search_tab/exercise_search_tab_switch_button.dart';
 import 'package:gym_app/utils/my_divider.dart';
 import 'package:gym_app/utils/my_image.dart';
+import 'package:provider/provider.dart';
 
 enum ExercisesSource { library, custom }
 
@@ -24,11 +30,25 @@ class ExerciseSearchTab extends StatefulWidget {
 class _ExerciseSearchTabState extends State<ExerciseSearchTab> {
   ExercisesSource _exercisesSource = ExercisesSource.library;
   List<Exercise> _exercises = [];
-  List<Exercise> _filteredExercises = [];
+  List<Exercise> _exercisesSourceList = [];
+
+  List<Exercise> _appExercises = [];
 
   void _changeExercisesSource(ExercisesSource newExercisesSource) {
     setState(() {
       _exercisesSource = newExercisesSource;
+      _exercisesSourceList = newExercisesSource == ExercisesSource.library
+          ? _appExercises
+          : context
+                .read<DataProvider>()
+                .customExercises
+                .where(
+                  (Exercise exercise) =>
+                      !widget.excludedExercisesIds.contains(exercise.id),
+                )
+                .toList();
+
+      _exercises = _exercisesSourceList;
     });
   }
 
@@ -43,25 +63,27 @@ class _ExerciseSearchTabState extends State<ExerciseSearchTab> {
     await exerciseRepository.loadExercises();
 
     setState(() {
-      _exercises = exerciseRepository.exercises
+      _appExercises = exerciseRepository.exercises
           // exclude exercises that are already added
           .where(
             (Exercise exercise) =>
                 widget.excludedExercisesIds.contains(exercise.id) == false,
           )
           .toList();
-      _filteredExercises = _exercises;
+
+      _exercises = _appExercises;
+      _exercisesSourceList = _exercises;
     });
   }
 
   void _filterExercises(String value) {
     if (value.trim().isEmpty) {
       setState(() {
-        _filteredExercises = _exercises;
+        _exercises = _exercisesSourceList;
       });
       return;
     }
-    List<Exercise> sortedExercises = _exercises;
+    List<Exercise> sortedExercises = _exercisesSourceList;
 
     sortedExercises.sort((Exercise a, Exercise b) {
       int scoreA = 0;
@@ -83,8 +105,15 @@ class _ExerciseSearchTabState extends State<ExerciseSearchTab> {
     });
 
     setState(() {
-      _filteredExercises = sortedExercises.sublist(0, 5);
+      _exercises = sortedExercises.sublist(0, 5);
     });
+  }
+
+  void _addExercise() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ExerciseCreatorTab()),
+    );
   }
 
   @override
@@ -92,7 +121,25 @@ class _ExerciseSearchTabState extends State<ExerciseSearchTab> {
     return CustomScrollView(
       slivers: [
         // tab app bar
-        SliverAppBar(title: Text("Add Exercise"), toolbarHeight: 50),
+        MyAppBar(
+          title: context.select(
+            (SettingsProvider provider) => provider.translations.addExercise,
+          ),
+          actions: [
+            IconButton(
+              onPressed: _addExercise,
+              icon: const Icon(Icons.add, size: 30),
+              style: ButtonStyle(
+                padding: WidgetStateProperty.all(const EdgeInsets.all(0)),
+                backgroundColor: WidgetStateProperty.all(Colors.red),
+              ),
+            ),
+          ],
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back),
+          ),
+        ),
 
         // floating search bar and "Exercise library" / "My Exercises" switch
         SliverAppBar(
@@ -104,75 +151,51 @@ class _ExerciseSearchTabState extends State<ExerciseSearchTab> {
               padding: const EdgeInsets.all(15),
               child: Column(
                 children: [
-                  // search bar
-                  SizedBox(
-                    height: 60,
-                    width: double.infinity,
-                    child: TextField(
-                      onChanged: _filterExercises,
-                      onTapOutside: (event) =>
-                          FocusManager.instance.primaryFocus?.unfocus(),
-                      textAlignVertical: TextAlignVertical.center,
-                      decoration: InputDecoration(
-                        hintText: "Search exercises...",
-                        prefixIcon: Icon(Icons.search),
-                      ),
-                    ),
+                  Selector<SettingsProvider, Translations>(
+                    selector: (_, provider) => provider.translations,
+                    builder: (context, translations, child) =>
+                        // search bar
+                        SizedBox(
+                          height: 60,
+                          width: double.infinity,
+                          child: TextField(
+                            onChanged: _filterExercises,
+                            onTapOutside: (event) =>
+                                FocusManager.instance.primaryFocus?.unfocus(),
+                            textAlignVertical: TextAlignVertical.center,
+                            decoration: InputDecoration(
+                              hintText: translations.searchExercise,
+                              prefixIcon: const Icon(Icons.search),
+                            ),
+                          ),
+                        ),
                   ),
 
                   // "Exercise library" / "My Exercises" switch
-                  SizedBox(
-                    width: double.infinity,
-                    child: Card(
-                      child: Row(
-                        spacing: 5,
-                        children: [
-                          // exercises library button
-                          Expanded(
-                            child: TextButton.icon(
-                              onPressed: () => _changeExercisesSource(
-                                ExercisesSource.library,
-                              ),
-                              label: Text(
-                                "Exercise Library",
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                              ),
-                              icon: Icon(Icons.book),
-                              style: ButtonStyle(
-                                backgroundColor: WidgetStateProperty.all(
-                                  _exercisesSource == ExercisesSource.library
-                                      ? AppTheme.red
-                                      : Theme.of(context).cardTheme.color,
-                                ),
-                              ),
+                  Selector<SettingsProvider, Translations>(
+                    selector: (_, provider) => provider.translations,
+                    builder: (context, translations, child) => SizedBox(
+                      width: double.infinity,
+                      child: Card(
+                        child: Row(
+                          spacing: 5,
+                          children: [
+                            // exercises library button
+                            ExerciseSearchTabSwitchButton(
+                              changeExercisesSource: _changeExercisesSource,
+                              exercisesSource: _exercisesSource,
+                              thisExerciseSource: ExercisesSource.library,
+                              labelText: translations.exerciseLibrary,
                             ),
-                          ),
-
-                          // custom exercises button
-                          Expanded(
-                            child: TextButton.icon(
-                              onPressed: () => _changeExercisesSource(
-                                ExercisesSource.custom,
-                              ),
-                              label: Text(
-                                "My exercises",
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                              ),
-                              icon: Icon(Icons.person),
-                              style: ButtonStyle(
-                                backgroundColor: WidgetStateProperty.all(
-                                  _exercisesSource == ExercisesSource.custom
-                                      ? AppTheme.red
-                                      : Theme.of(context).cardTheme.color,
-                                ),
-                              ),
+                            // custom exercises button
+                            ExerciseSearchTabSwitchButton(
+                              changeExercisesSource: _changeExercisesSource,
+                              exercisesSource: _exercisesSource,
+                              thisExerciseSource: ExercisesSource.custom,
+                              labelText: translations.myExercises,
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -185,9 +208,9 @@ class _ExerciseSearchTabState extends State<ExerciseSearchTab> {
         SliverPadding(
           padding: const EdgeInsets.all(15),
           sliver: SliverList.separated(
-            itemCount: _filteredExercises.length,
+            itemCount: _exercises.length,
             itemBuilder: (context, index) {
-              Exercise exercise = _filteredExercises[index];
+              Exercise exercise = _exercises[index];
 
               return Card(
                 child: Padding(
@@ -195,10 +218,11 @@ class _ExerciseSearchTabState extends State<ExerciseSearchTab> {
                   child: Row(
                     spacing: 15,
                     children: [
-                      MyImage(
-                        size: 150,
-                        path: './assets/exercises/${exercise.images[0]}',
-                      ),
+                      if (exercise.images.isNotEmpty)
+                        MyImage(
+                          size: 150,
+                          path: './assets/exercises/${exercise.images[0]}',
+                        ),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -206,29 +230,35 @@ class _ExerciseSearchTabState extends State<ExerciseSearchTab> {
                             AutoSizeText(
                               exercise.name,
                               maxFontSize: 15,
-                              maxLines: 1,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
                               style: TextStyle(fontSize: 15),
                             ),
-                            Text(
-                              exercise.primaryMuscles?.join(", ") ?? "",
+                            AutoSizeText(
+                              [
+                                ...exercise.primaryMuscles ?? [],
+                                ...exercise.secondaryMuscles ?? [],
+                              ].join(", "),
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Theme.of(context).colorScheme.secondary,
                               ),
+                              maxLines: 4,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ],
                         ),
                       ),
                       IconButton(
                         onPressed: () => widget.addExercise(exercise),
-                        icon: Icon(Icons.add),
+                        icon: const Icon(Icons.add),
                       ),
                     ],
                   ),
                 ),
               );
             },
-            separatorBuilder: (context, index) => MyDivider(),
+            separatorBuilder: (context, index) => const MyDivider(),
           ),
         ),
       ],

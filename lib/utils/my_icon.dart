@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MyIcon extends StatelessWidget {
   final double size;
@@ -24,7 +23,7 @@ class MyIcon extends StatelessWidget {
         ),
         child: FittedBox(
           child: Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: Center(child: icon),
           ),
         ),

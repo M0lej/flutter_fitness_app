@@ -4,6 +4,8 @@ import 'package:gym_app/data/data_provider.dart';
 import 'package:gym_app/data/timer_provider.dart';
 import 'package:gym_app/hive/data_model.dart';
 import 'package:gym_app/hive/exercise.dart';
+import 'package:gym_app/hive/exercise_stats.dart';
+import 'package:gym_app/hive/month_stats.dart';
 import 'package:gym_app/hive/plan.dart';
 import 'package:gym_app/hive/workout_set.dart';
 import 'package:gym_app/hive/weight_unit.dart';
@@ -22,9 +24,10 @@ void main() async {
   // init notification service
   await NotificationService.instance.initialize();
   await NotificationService.instance.notifications
-    .resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>()
-    ?.requestNotificationsPermission();
+      .resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin
+      >()
+      ?.requestNotificationsPermission();
 
   // init hive
   await Hive.initFlutter();
@@ -36,8 +39,10 @@ void main() async {
   Hive.registerAdapter(PlanAdapter());
   Hive.registerAdapter(WorkoutLogAdapter());
   Hive.registerAdapter(WeightUnitAdapter());
+  Hive.registerAdapter(MonthStatsAdapter());
+  Hive.registerAdapter(ExerciseStatsAdapter());
 
-  // await Hive.deleteBoxFromDisk('data');
+  await Hive.deleteBoxFromDisk('data');
   await Hive.openBox<DataModel>('data');
 
   runApp(

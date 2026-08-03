@@ -11,7 +11,7 @@ class CustomCard extends StatelessWidget {
     this.title,
     required this.children,
     this.padding,
-    this.color
+    this.color,
   });
 
   @override

@@ -26,5 +26,6 @@
     "statusBar.debuggingForeground": "#e7e7e7"
   },
   "peacock.color": "#007fff",
-  "java.configuration.updateBuildConfiguration": "interactive"
+  "java.configuration.updateBuildConfiguration": "interactive",
+  "cSpell.words": ["Abdominis"]
 }
