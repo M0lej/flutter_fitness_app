@@ -58,7 +58,7 @@ class ActiveWorkoutCard extends StatelessWidget {
                     ),
 
                     Text(
-                      '${appData.activeWorkout!.plan.exercises.length} ${settings.translations.exercises}',
+                      '${appData.activeWorkout!.plan.exercises.length} ${settings.translations.exercises(appData.activeWorkout!.plan.exercises.length)}',
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.secondary,
                       ),

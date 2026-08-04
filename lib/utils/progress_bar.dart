@@ -3,8 +3,8 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 class ProgressBar extends StatelessWidget {
-  final double value;
-  final double maxValue;
+  final int value;
+  final int maxValue;
   const ProgressBar({super.key, required this.value, required this.maxValue});
 
   @override

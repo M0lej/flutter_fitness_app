@@ -157,7 +157,7 @@ class _PlanCardState extends State<PlanCard> {
                       ),
 
                       Text(
-                        '${widget.plan.exercises.length} ${widget.settings.translations.exercises}',
+                        '${widget.plan.exercises.length} ${widget.settings.translations.exercises(widget.plan.exercises.length)}',
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.secondary,
                         ),
@@ -229,7 +229,7 @@ class _PlanCardState extends State<PlanCard> {
                       color: Theme.of(context).colorScheme.primary,
                     ),
                     label: Text(
-                      "Edit",
+                      widget.settings.translations.edit,
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.primary,
                       ),

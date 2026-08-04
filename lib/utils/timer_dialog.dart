@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app/data/timer_provider.dart';
 import 'package:gym_app/extensions/int_extensions.dart';
+import 'package:gym_app/settings/settings_provider.dart';
 import 'package:provider/provider.dart';
 
 class TimerDialog extends StatefulWidget {
@@ -33,7 +34,10 @@ class _TimerDialogState extends State<TimerDialog> {
       seconds: ((_time - _time.toInt()) * 60).toInt(),
     );
 
-    context.read<TimerProvider>().start(duration);
+    context.read<TimerProvider>().start(
+      duration,
+      context.read<SettingsProvider>().language,
+    );
   }
 
   @override
@@ -41,22 +45,22 @@ class _TimerDialogState extends State<TimerDialog> {
     return AlertDialog(
       title: Text(
         "${_time.toInt().toTwoDigitString()}:${(((_time - _time.toInt()) * 60).toInt().toTwoDigitString())}",
-        style: TextStyle(fontSize: 20),
+        style: const TextStyle(fontSize: 20),
         textAlign: TextAlign.center,
       ),
       content: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          IconButton(onPressed: _addTime, icon: Icon(Icons.add)),
+          IconButton(onPressed: _addTime, icon: const Icon(Icons.add)),
           TextButton.icon(
             onPressed: () {
               _startTimer();
               Navigator.pop(context);
             },
             label: Text("Start"),
-            icon: Icon(Icons.play_arrow),
+            icon: const Icon(Icons.play_arrow),
           ),
-          IconButton(onPressed: _subTime, icon: Icon(Icons.remove)),
+          IconButton(onPressed: _subTime, icon: const Icon(Icons.remove)),
         ],
       ),
     );

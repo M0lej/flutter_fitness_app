@@ -13,7 +13,7 @@ abstract class Translations {
   String Function(DateTime) get formattedDate;
 
   String Function(int, int) get workoutProgress;
-  String get exercises;
+  String Function(int) get exercises;
   String get startWorkout;
   String get selectWorkout;
   String get allPlansHaveBeenCompleted;
@@ -34,6 +34,7 @@ abstract class Translations {
   String get thisActionCannotBeUndone;
 
   String get delete;
+  String get edit;
   String get cancel;
 
   String get weightUnit;
@@ -67,4 +68,11 @@ abstract class Translations {
 
   Map<String, Set<String>> get musclesCategorized;
   Set<String> get equipmentSet;
+
+  String get progressOverview;
+  String get workouts;
+  String get vsLastMonth;
+
+  String get language;
+  String get timeIsUp;
 }

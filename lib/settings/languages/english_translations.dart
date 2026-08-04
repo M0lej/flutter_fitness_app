@@ -63,7 +63,11 @@ class EnglishTranslations extends Translations {
       (int progress, int goal) => '$progress of $goal workouts completed';
 
   @override
-  String get exercises => "exercises";
+  String Function(int) get exercises =>
+      (int exercisesNum) => switch (exercisesNum) {
+        1 => "exercise",
+        _ => "exercises",
+      };
 
   @override
   String get startWorkout => "Start workout";
@@ -115,6 +119,9 @@ class EnglishTranslations extends Translations {
 
   @override
   String get delete => "Delete";
+
+  @override
+  String get edit => "Edit";
 
   @override
   String get cancel => "Cancel";
@@ -258,4 +265,19 @@ class EnglishTranslations extends Translations {
 
     'Other',
   };
+
+  @override
+  String get progressOverview => "PROGRESS OVERVIEW";
+
+  @override
+  String get workouts => "Workouts";
+
+  @override
+  String get vsLastMonth => "vs last month";
+
+  @override
+  String get language => "LANGUAGE";
+
+  @override
+  String get timeIsUp => "Time is up!";
 }

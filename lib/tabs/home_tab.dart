@@ -29,41 +29,37 @@ class HomeTab extends StatelessWidget {
               children: [
                 // show next workout plan if there any created
                 if (appData.plans.isNotEmpty)
-                  CustomCard(
-                    title: settings.translations.nextWorkout,
-                    children: [NextWorkout()],
+                  Column(
+                    children: [
+                      CustomCard(
+                        title: settings.translations.nextWorkout,
+                        children: [NextWorkout()],
+                      ),
+                      const MyDivider(),
+                    ],
                   ),
 
-                const MyDivider(),
                 // workout calendar card
                 CustomCard(
                   title: settings.translations.thisWeek,
                   children: [
                     WorkoutCalendar(appData: appData, settings: settings),
-                    StatusBar(),
+                    StatusBar(appData: appData, settings: settings),
                   ],
                 ),
 
                 const MyDivider(),
                 // show recent workout logs card if there were any completed
                 if (appData.getWorkoutLogsFromThisWeek().isNotEmpty)
-                  CustomCard(
-                    title: settings.translations.recentWorkouts,
-                    children: [RecentWorkouts()],
+                  Column(
+                    children: [
+                      CustomCard(
+                        title: settings.translations.recentWorkouts,
+                        children: [RecentWorkouts()],
+                      ),
+                      const MyDivider(),
+                    ],
                   ),
-                TextButton(
-                  onPressed: () {
-                    List<WorkoutLog> workoutLogs = context
-                        .read<DataProvider>()
-                        .workoutLogs;
-                    for (WorkoutLog workoutLog in workoutLogs) {
-                      context.read<DataProvider>().removeLog(workoutLog);
-                    }
-                  },
-                  child: Text("Wyczyść logi"),
-                ),
-
-                const MyDivider(),
 
                 // stats
                 StatsCard(appData: appData, settings: settings),

@@ -20,9 +20,12 @@ class WorkoutTimer extends StatelessWidget {
 
     return GestureDetector(
       onTap: showTimerPopup,
-      child: Row(
+      child: const Row(
         spacing: 15,
-        children: [Icon(Icons.timer_outlined), Text("Timer")],
+        children: [
+          Icon(Icons.timer_outlined),
+          Text("Timer", style: TextStyle(fontSize: 15)),
+        ],
       ),
     );
   }

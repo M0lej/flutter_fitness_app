@@ -6,6 +6,7 @@ class MySegmentedButton extends StatefulWidget {
   final Function(Set<String>, String, bool) onChanged;
   final Set<String> initialValues;
   final bool multiSelection;
+  final int minSelection;
 
   const MySegmentedButton({
     super.key,
@@ -13,6 +14,7 @@ class MySegmentedButton extends StatefulWidget {
     required this.onChanged,
     this.initialValues = const {},
     this.multiSelection = true,
+    this.minSelection = 0,
   });
 
   @override
@@ -28,12 +30,20 @@ class _MySegmentedButtonState extends State<MySegmentedButton> {
     selectedValues = Set<String>.from(widget.initialValues);
   }
 
-  void _onSelectChanged(String segment, bool value) {
-    if (value) {
+  void _changeSelection(String segment, bool value) {
+    if (widget.minSelection == 1) {
+      if (value) {
+        setState(() {
+          selectedValues = {segment};
+        });
+      }
+    } else if (value &&
+        (widget.multiSelection == true ||
+            (widget.multiSelection == false && selectedValues.isEmpty))) {
       setState(() {
         selectedValues.add(segment);
       });
-    } else {
+    } else if (selectedValues.length - 1 >= widget.minSelection) {
       setState(() {
         selectedValues.remove(segment);
       });
@@ -49,11 +59,9 @@ class _MySegmentedButtonState extends State<MySegmentedButton> {
           .map(
             (String segment) => ToggleTextButton(
               labelText: segment,
-              onChange: (value) => _onSelectChanged(segment, value),
-              defaultSelected: widget.initialValues.contains(segment),
-              canBeToggledOn:
-                  widget.multiSelection == true ||
-                  (widget.multiSelection == false && selectedValues.isEmpty),
+              value: segment,
+              onChange: _changeSelection,
+              selected: selectedValues.contains(segment),
             ),
           )
           .toList(),

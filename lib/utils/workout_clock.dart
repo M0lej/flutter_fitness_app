@@ -38,8 +38,11 @@ class _WorkoutClockState extends State<WorkoutClock> {
     return Row(
       spacing: 15,
       children: [
-        Icon(Icons.access_time),
-        Text(_getTimeDiff(widget.activeWorkout.start, DateTime.now())),
+        const Icon(Icons.access_time),
+        Text(
+          _getTimeDiff(widget.activeWorkout.start, DateTime.now()),
+          style: const TextStyle(fontSize: 15),
+        ),
       ],
     );
   }

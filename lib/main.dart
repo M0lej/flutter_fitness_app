@@ -5,8 +5,10 @@ import 'package:gym_app/data/timer_provider.dart';
 import 'package:gym_app/hive/data_model.dart';
 import 'package:gym_app/hive/exercise.dart';
 import 'package:gym_app/hive/exercise_stats.dart';
+import 'package:gym_app/hive/language.dart';
 import 'package:gym_app/hive/month_stats.dart';
 import 'package:gym_app/hive/plan.dart';
+import 'package:gym_app/hive/settings_model.dart';
 import 'package:gym_app/hive/workout_set.dart';
 import 'package:gym_app/hive/weight_unit.dart';
 import 'package:gym_app/hive/workout_log.dart';
@@ -41,20 +43,20 @@ void main() async {
   Hive.registerAdapter(WeightUnitAdapter());
   Hive.registerAdapter(MonthStatsAdapter());
   Hive.registerAdapter(ExerciseStatsAdapter());
+  Hive.registerAdapter(SettingsModelAdapter());
+  Hive.registerAdapter(LanguageAdapter());
 
-  await Hive.deleteBoxFromDisk('data');
+  // await Hive.deleteBoxFromDisk('data');
+  // await Hive.deleteBoxFromDisk('settings');
+
   await Hive.openBox<DataModel>('data');
+  await Hive.openBox<SettingsModel>('settings');
 
   runApp(
     // init providers with default data
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => SettingsProvider(
-            language: Language.pl,
-            weightUnit: WeightUnit.kg,
-          ),
-        ),
+        ChangeNotifierProvider(create: (_) => SettingsProvider()),
         ChangeNotifierProvider(create: (_) => DataProvider()),
         ChangeNotifierProvider(create: (_) => TimerProvider()),
       ],

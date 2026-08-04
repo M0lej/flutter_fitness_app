@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:gym_app/data/data_provider.dart';
 import 'package:gym_app/hive/exercise.dart';
 import 'package:gym_app/hive/plan.dart';
+import 'package:gym_app/settings/languages/translations.dart';
 import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/tabs/app_tabs_controller.dart';
 import 'package:gym_app/tabs/workout_tab.dart';
@@ -18,16 +19,17 @@ class NextWorkout extends StatelessWidget {
     bool workoutQuotaCompleted = nextWorkoutPlan == null;
 
     if (workoutQuotaCompleted) {
-      return Consumer<SettingsProvider>(
-        builder: (context, settingsModelValues, child) => Column(
+      return Selector<SettingsProvider, Translations>(
+        selector: (_, provider) => provider.translations,
+        builder: (context, translations, child) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              settingsModelValues.translations.allPlansHaveBeenCompleted,
+              translations.allPlansHaveBeenCompleted,
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
             Text(
-              settingsModelValues.translations.continueMessage,
+              translations.continueMessage,
               style: TextStyle(
                 color: Theme.of(context).colorScheme.secondary,
                 fontSize: 12,
@@ -41,7 +43,7 @@ class NextWorkout extends StatelessWidget {
                     child: TextButton.icon(
                       onPressed: () => changeTab(1, context),
                       label: Text(
-                        settingsModelValues.translations.selectWorkout,
+                        translations.selectWorkout,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).colorScheme.primary,
@@ -72,67 +74,67 @@ class NextWorkout extends StatelessWidget {
       );
     }
 
-    return Consumer2<SettingsProvider, DataProvider>(
-      builder: (context, settingModelValues, dataModelValues, child) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        spacing: 5,
-        children: [
-          AutoSizeText(
-            nextWorkoutPlan.name,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            minFontSize: 20,
-            style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 5,
+      children: [
+        AutoSizeText(
+          nextWorkoutPlan.name,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          minFontSize: 20,
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+        ),
+        Text(
+          '${nextWorkoutPlan.exercises.length} ${context.select<SettingsProvider, String>((provider) => provider.translations.exercises(nextWorkoutPlan.exercises.length))}',
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.secondary,
+            fontSize: 12,
           ),
-          Text(
-            '${0} ${settingModelValues.translations.exercises}',
-            style: TextStyle(
-              color: Theme.of(context).colorScheme.secondary,
-              fontSize: 12,
-            ),
-          ),
+        ),
 
-          // primary muscles
-          Row(
-            spacing: 5,
+        // primary muscles
+        Row(
+          spacing: 5,
+          children: [
+            nextWorkoutPlan.icon,
+            Expanded(
+              child: AutoSizeText(
+                primaryMusclesString,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.secondary,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 15),
+          child: Row(
             children: [
-              nextWorkoutPlan.icon,
               Expanded(
-                child: AutoSizeText(
-                  primaryMusclesString,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.secondary,
-                    fontSize: 12,
+                child: TextButton.icon(
+                  onPressed: startWorkout,
+                  label: Text(
+                    context.select<SettingsProvider, String>(
+                      (provider) => provider.translations.startWorkout,
+                    ),
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                   ),
+                  icon: Icon(Icons.keyboard_arrow_right),
+                  iconAlignment: IconAlignment.end,
                 ),
               ),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 15),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextButton.icon(
-                    onPressed: startWorkout,
-                    label: Text(
-                      "Start workout",
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                    icon: Icon(Icons.keyboard_arrow_right),
-                    iconAlignment: IconAlignment.end,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

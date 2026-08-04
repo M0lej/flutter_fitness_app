@@ -2,7 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:gym_app/hive/language.dart';
 import 'package:gym_app/services/notification_service.dart';
+import 'package:gym_app/settings/languages/english_translations.dart';
+import 'package:gym_app/settings/languages/polish_translations.dart';
 import 'package:gym_app/utils/my_alert_dialog.dart';
 
 class TimerProvider extends ChangeNotifier {
@@ -11,7 +14,14 @@ class TimerProvider extends ChangeNotifier {
   Duration remaining = Duration.zero;
   DateTime? _endTime;
 
-  void start(Duration duration) {
+  String _timeIsUp = EnglishTranslations().timeIsUp;
+
+  void start(Duration duration, Language language) {
+    _timeIsUp = switch (language) {
+      Language.pl => PolishTranslations().timeIsUp,
+      Language.en => EnglishTranslations().timeIsUp,
+    };
+
     _endTime = DateTime.now().add(duration);
     remaining = duration;
 
@@ -35,14 +45,13 @@ class TimerProvider extends ChangeNotifier {
     if (_endTime == null) return;
 
     remaining = _endTime!.difference(DateTime.now());
-
     if (remaining <= Duration.zero) {
       remaining = Duration.zero;
       _timer?.cancel();
 
       showAppDialog<void>(
         builder: (dialogContext) => MyAlertDialog(
-          title: "Time is up!",
+          title: "Time is up",
           buttons: [
             TextButton.icon(
               onPressed: () => Navigator.pop(dialogContext),
@@ -55,12 +64,12 @@ class TimerProvider extends ChangeNotifier {
       await NotificationService.instance.notifications.show(
         id: 0,
         title: "Timer",
-        body: "Time is up!",
+        body: _timeIsUp,
         notificationDetails: const NotificationDetails(
           android: AndroidNotificationDetails(
             'timer_channel',
             'Timer',
-            channelDescription: 'Powiadomienia timera',
+            channelDescription: 'Timer notification',
             importance: Importance.max,
             priority: Priority.high,
           ),

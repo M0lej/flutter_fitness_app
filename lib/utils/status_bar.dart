@@ -3,16 +3,15 @@ import 'package:gym_app/data/data_provider.dart';
 import 'package:gym_app/hive/workout_log.dart';
 import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/utils/progress_bar.dart';
-import 'package:provider/provider.dart';
 
 class StatusBar extends StatelessWidget {
-  const StatusBar({super.key});
+  final SettingsProvider settings;
+  final DataProvider appData;
+  const StatusBar({super.key, required this.settings, required this.appData});
 
   @override
   Widget build(BuildContext context) {
-    List<WorkoutLog> workoutLogs = context
-        .read<DataProvider>()
-        .getWorkoutLogsFromThisWeek();
+    List<WorkoutLog> workoutLogs = appData.getWorkoutLogsFromThisWeek();
 
     return Row(
       children: [
@@ -22,9 +21,9 @@ class StatusBar extends StatelessWidget {
             spacing: 5,
             children: [
               Text(
-                context.read<SettingsProvider>().translations.workoutProgress(
+                settings.translations.workoutProgress(
                   workoutLogs.length,
-                  context.read<DataProvider>().plans.length,
+                  appData.plans.length,
                 ),
               ),
               Row(
@@ -33,12 +32,8 @@ class StatusBar extends StatelessWidget {
                     child: SizedBox(
                       height: 8,
                       child: ProgressBar(
-                        value: workoutLogs.length.toDouble(),
-                        maxValue: context
-                            .read<DataProvider>()
-                            .plans
-                            .length
-                            .toDouble(),
+                        value: workoutLogs.length,
+                        maxValue: settings.weekWorkoutsGoal,
                       ),
                     ),
                   ),

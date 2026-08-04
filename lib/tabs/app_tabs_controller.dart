@@ -3,6 +3,7 @@ import 'package:gym_app/settings/languages/translations.dart';
 import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/tabs/home_tab.dart';
 import 'package:gym_app/tabs/plans_tab.dart';
+import 'package:gym_app/tabs/settings_tab.dart';
 import 'package:provider/provider.dart';
 
 class AppTabsController extends StatefulWidget {
@@ -25,6 +26,7 @@ class _AppTabsControllerState extends State<AppTabsController> {
 
   final _homeTab = GlobalKey<NavigatorState>();
   final _plansTab = GlobalKey<NavigatorState>();
+  final _settingsTab = GlobalKey<NavigatorState>();
 
   void _onTap(int index, BuildContext context) {
     if (_currentIndex == index) {
@@ -34,6 +36,9 @@ class _AppTabsControllerState extends State<AppTabsController> {
           break;
         case 1:
           _plansTab.currentState!.popUntil((route) => route.isFirst);
+          break;
+        case 2:
+          _settingsTab.currentState!.popUntil((route) => route.isFirst);
           break;
       }
     } else {
@@ -47,7 +52,9 @@ class _AppTabsControllerState extends State<AppTabsController> {
 
   @override
   Widget build(BuildContext context) {
-    Translations translations = context.watch<SettingsProvider>().translations;
+    Translations translations = context.select<SettingsProvider, Translations>(
+      (provider) => provider.translations,
+    );
 
     return Scaffold(
       body: IndexedStack(
@@ -67,6 +74,11 @@ class _AppTabsControllerState extends State<AppTabsController> {
               builder: (context) => PlansTab(),
             ),
           ),
+          Navigator(
+            key: _settingsTab,
+            onGenerateRoute: (route) =>
+                MaterialPageRoute(builder: (context) => SettingsTab()),
+          ),
         ],
       ),
       // Bottom navigation bar
@@ -84,7 +96,7 @@ class _AppTabsControllerState extends State<AppTabsController> {
           ),
           BottomNavigationBarItem(
             icon: const Icon(Icons.settings),
-            label: "Settings",
+            label: translations.settings,
           ),
         ],
       ),

@@ -15,7 +15,7 @@ class PolishTranslations extends Translations {
   String get motivationText => "Gotowy osiągnąć swoje cele?";
 
   @override
-  String get home => "Strona głowna";
+  String get home => "Strona główna";
 
   @override
   String get plans => "Plany";
@@ -63,7 +63,12 @@ class PolishTranslations extends Translations {
       (int progress, int goal) => 'Ukończono $progress z $goal treningów';
 
   @override
-  String get exercises => "ćwiczeń";
+  String Function(int) get exercises =>
+      (int exercisesNum) => switch (exercisesNum) {
+        1 => "ćwiczenie",
+        2 || 3 || 4 => "ćwiczenia",
+        _ => "ćwiczeń",
+      };
 
   @override
   String get startWorkout => "Rozpocznij trening";
@@ -114,6 +119,9 @@ class PolishTranslations extends Translations {
 
   @override
   String get delete => "Usuń";
+
+  @override
+  String get edit => "Edytuj";
 
   @override
   String get cancel => "Anuluj";
@@ -277,4 +285,19 @@ class PolishTranslations extends Translations {
 
     'Inne',
   };
+
+  @override
+  String get progressOverview => "POSTĘPY";
+
+  @override
+  String get workouts => "Liczba treningów";
+
+  @override
+  String get vsLastMonth => "vs poprzedni miesiąc";
+
+  @override
+  String get language => "JĘZYK";
+
+  @override
+  String get timeIsUp => "Czas upłynął!";
 }

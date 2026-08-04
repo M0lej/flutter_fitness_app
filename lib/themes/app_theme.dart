@@ -56,22 +56,35 @@ class AppTheme {
     ),
 
     inputDecorationTheme: InputDecorationThemeData(
-      border: OutlineInputBorder(borderSide: BorderSide(color: borderColor)),
-      enabledBorder: OutlineInputBorder(
+      border: const OutlineInputBorder(
         borderSide: BorderSide(color: borderColor),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderSide: const BorderSide(color: borderColor),
         borderRadius: BorderRadius.circular(15),
       ),
       focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: borderColor),
+        borderSide: const BorderSide(color: borderColor),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderSide: const BorderSide(color: red),
+        borderRadius: BorderRadius.circular(15),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderSide: const BorderSide(color: red),
         borderRadius: BorderRadius.circular(15),
       ),
       filled: true,
       fillColor: const Color.fromARGB(255, 31, 29, 37),
-      labelStyle: TextStyle(color: Colors.white, fontSize: 15),
-      hintStyle: TextStyle(color: Colors.white60, fontSize: 15),
+      labelStyle: const TextStyle(color: Colors.white, fontSize: 15),
+      errorStyle: const TextStyle(color: red, fontSize: 13),
+      hintStyle: const TextStyle(color: Colors.white60, fontSize: 15),
+      helperStyle: const TextStyle(color: Colors.transparent),
       iconColor: Colors.white70,
       suffixIconColor: Colors.white70,
       prefixIconColor: Colors.white70,
+      contentPadding: const EdgeInsets.all(15),
       isDense: true,
     ),
 

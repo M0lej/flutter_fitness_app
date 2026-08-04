@@ -31,7 +31,7 @@ class StatsCard extends StatelessWidget {
     int percentageValue = _getPercentageValue(appData.monthsStats);
 
     return CustomCard(
-      title: "PROGRESS OVERVIEW  ",
+      title: settings.translations.progressOverview,
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -39,12 +39,12 @@ class StatsCard extends StatelessWidget {
           children: [
             StatsCardItem(
               value: appData.completedWorkoutsCount.toString(),
-              labelText: 'Workouts',
+              labelText: settings.translations.workouts,
               icon: const FaIcon(FontAwesomeIcons.dumbbell),
             ),
             StatsCardItem(
               value: _formatPercentageValue(percentageValue),
-              labelText: 'vs last month',
+              labelText: settings.translations.vsLastMonth,
               icon: Icon(
                 percentageValue == 0
                     ? Icons.trending_flat
