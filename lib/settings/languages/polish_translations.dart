@@ -300,4 +300,15 @@ class PolishTranslations extends Translations {
 
   @override
   String get timeIsUp => "Czas upłynął!";
+
+  @override
+  String get save => "Zapisz";
+
+  @override
+  String get weeklyTrainingGoal => "TYGODNIOWY CEL TRENINGOWY";
+  @override
+  String get pleaseEnterACorrectNumber => "Prosze wprowadzić prawidłową liczbe";
+  @override
+  String get weeklyGoalNumberMustBe =>
+      "Prosze wprowadzić liczbę znajdującą się w przedziale od 0 do 7";
 }

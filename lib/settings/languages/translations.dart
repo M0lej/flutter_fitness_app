@@ -75,4 +75,9 @@ abstract class Translations {
 
   String get language;
   String get timeIsUp;
+  
+  String get save;
+  String get weeklyTrainingGoal;
+  String get pleaseEnterACorrectNumber;
+  String get weeklyGoalNumberMustBe;
 }

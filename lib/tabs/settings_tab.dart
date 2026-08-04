@@ -108,7 +108,7 @@ class _SettingsTabState extends State<SettingsTab> {
                     const MyDivider(),
 
                     CustomCard(
-                      title: "WEEKLY TRAINING GOAL",
+                      title: settings.translations.weeklyTrainingGoal,
                       children: [
                         SizedBox(
                           width: double.infinity,
@@ -121,11 +121,15 @@ class _SettingsTabState extends State<SettingsTab> {
                               if (value == null ||
                                   int.tryParse(value) == null ||
                                   value.isEmpty) {
-                                return "Please enter a correct number";
+                                return settings
+                                    .translations
+                                    .pleaseEnterACorrectNumber;
                               }
                               int intValue = int.parse(value);
                               if (intValue < 0 || intValue > 7) {
-                                return "Weekly goal number must be between 0 and 7";
+                                return settings
+                                    .translations
+                                    .weeklyGoalNumberMustBe;
                               }
                               return null;
                             },
@@ -143,7 +147,7 @@ class _SettingsTabState extends State<SettingsTab> {
                     TextButton.icon(
                       onPressed: _save,
                       label: Text(
-                        "Save",
+                        settings.translations.save,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).colorScheme.primary,
