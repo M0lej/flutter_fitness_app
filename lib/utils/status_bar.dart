@@ -23,7 +23,7 @@ class StatusBar extends StatelessWidget {
               Text(
                 settings.translations.workoutProgress(
                   workoutLogs.length,
-                  appData.plans.length,
+                  settings.weekWorkoutsGoal,
                 ),
               ),
               Row(

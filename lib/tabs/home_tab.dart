@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app/data/data_provider.dart';
-import 'package:gym_app/hive/workout_log.dart';
 import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/utils/appBars/home_tab_app_bar.dart';
 import 'package:gym_app/utils/custom_card.dart';
@@ -33,7 +32,9 @@ class HomeTab extends StatelessWidget {
                     children: [
                       CustomCard(
                         title: settings.translations.nextWorkout,
-                        children: [NextWorkout()],
+                        children: [
+                          NextWorkout(appData: appData, settings: settings),
+                        ],
                       ),
                       const MyDivider(),
                     ],

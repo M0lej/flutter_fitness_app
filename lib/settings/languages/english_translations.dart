@@ -285,9 +285,15 @@ class EnglishTranslations extends Translations {
   String get save => "Save";
 
   @override
+  String get saved => "Saved";
+
+  @override
   String get weeklyTrainingGoal => "WEEKLY TRAINING GOAL";
   @override
   String get pleaseEnterACorrectNumber => "Please enter a valid number";
   @override
   String get weeklyGoalNumberMustBe => "Please enter a number between 0 and 7";
+
+  @override
+  String get workoutContinue => "Continue";
 }

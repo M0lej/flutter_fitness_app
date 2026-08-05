@@ -3,61 +3,58 @@ import 'package:flutter/material.dart';
 import 'package:gym_app/data/data_provider.dart';
 import 'package:gym_app/hive/exercise.dart';
 import 'package:gym_app/hive/plan.dart';
-import 'package:gym_app/settings/languages/translations.dart';
 import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/tabs/app_tabs_controller.dart';
 import 'package:gym_app/tabs/workout_tab.dart';
-import 'package:provider/provider.dart';
 
 class NextWorkout extends StatelessWidget {
-  const NextWorkout({super.key});
+  final DataProvider appData;
+  final SettingsProvider settings;
+  const NextWorkout({super.key, required this.appData, required this.settings});
 
   @override
   Widget build(BuildContext context) {
-    Plan? nextWorkoutPlan = context.watch<DataProvider>().getNextWorkoutPlan();
+    Plan? nextWorkoutPlan = appData.getNextWorkoutPlan();
 
     bool workoutQuotaCompleted = nextWorkoutPlan == null;
 
     if (workoutQuotaCompleted) {
-      return Selector<SettingsProvider, Translations>(
-        selector: (_, provider) => provider.translations,
-        builder: (context, translations, child) => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              translations.allPlansHaveBeenCompleted,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            settings.translations.allPlansHaveBeenCompleted,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            settings.translations.continueMessage,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.secondary,
+              fontSize: 12,
             ),
-            Text(
-              translations.continueMessage,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.secondary,
-                fontSize: 12,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 15),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextButton.icon(
-                      onPressed: () => changeTab(1, context),
-                      label: Text(
-                        translations.selectWorkout,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 15),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextButton.icon(
+                    onPressed: () => changeTab(1, context),
+                    label: Text(
+                      settings.translations.selectWorkout,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
-                      icon: Icon(Icons.keyboard_arrow_right),
-                      iconAlignment: IconAlignment.end,
                     ),
+                    icon: const Icon(Icons.keyboard_arrow_right),
+                    iconAlignment: IconAlignment.end,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       );
     }
 
@@ -66,6 +63,10 @@ class NextWorkout extends StatelessWidget {
         .join(', ');
 
     void startWorkout() {
+      if (appData.activeWorkout == null) {
+        appData.addActiveWorkout(nextWorkoutPlan);
+      }
+
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -86,7 +87,7 @@ class NextWorkout extends StatelessWidget {
           style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
         ),
         Text(
-          '${nextWorkoutPlan.exercises.length} ${context.select<SettingsProvider, String>((provider) => provider.translations.exercises(nextWorkoutPlan.exercises.length))}',
+          '${nextWorkoutPlan.exercises.length} ${settings.translations.exercises(nextWorkoutPlan.exercises.length)}',
           style: TextStyle(
             color: Theme.of(context).colorScheme.secondary,
             fontSize: 12,
@@ -119,9 +120,9 @@ class NextWorkout extends StatelessWidget {
                 child: TextButton.icon(
                   onPressed: startWorkout,
                   label: Text(
-                    context.select<SettingsProvider, String>(
-                      (provider) => provider.translations.startWorkout,
-                    ),
+                    appData.activeWorkout != null
+                        ? settings.translations.workoutContinue
+                        : settings.translations.startWorkout,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Theme.of(context).colorScheme.primary,

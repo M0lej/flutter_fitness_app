@@ -25,10 +25,6 @@ class _SettingsTabState extends State<SettingsTab> {
 
   void _save() {
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Saving...")));
-
       SettingsProvider settings = context.read<SettingsProvider>();
 
       if (_language != null) {
@@ -40,6 +36,17 @@ class _SettingsTabState extends State<SettingsTab> {
       }
 
       settings.setWeekWorkoutsGoal(int.parse(_controller.text));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            spacing: 15,
+            children: [
+              const Icon(Icons.check, color: Colors.white),
+              Text(context.read<SettingsProvider>().translations.saved),
+            ],
+          ),
+        ),
+      );
     }
   }
 
@@ -64,6 +71,8 @@ class _SettingsTabState extends State<SettingsTab> {
               child: Form(
                 key: _formKey,
                 child: ListView(
+                  physics: NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(0),
                   shrinkWrap: true,
                   children: [
                     CustomCard(

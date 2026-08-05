@@ -5,6 +5,7 @@ class AppTheme {
   static const Color backgroundBlack = Color.fromARGB(255, 23, 21, 30);
   static const Color borderColor = Color.fromARGB(255, 52, 48, 62);
   static const Color red = Color.fromARGB(255, 237, 20, 5);
+  static const Color cardColor = Color.fromARGB(255, 31, 29, 37);
 
   ThemeData dark = ThemeData(
     useMaterial3: true,
@@ -22,7 +23,7 @@ class AppTheme {
 
     cardTheme: CardThemeData(
       margin: EdgeInsets.all(0),
-      color: const Color.fromARGB(255, 31, 29, 37),
+      color: cardColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15),
         side: BorderSide(color: borderColor),
@@ -30,7 +31,7 @@ class AppTheme {
     ),
 
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
-      backgroundColor: const Color.fromARGB(255, 31, 29, 37),
+      backgroundColor: cardColor,
       selectedIconTheme: IconThemeData(color: red),
       selectedItemColor: red,
     ),
@@ -105,6 +106,21 @@ class AppTheme {
           <WidgetStatesConstraint, BorderSide>{
             WidgetState.selected: BorderSide(width: 0),
           },
+        ),
+      ),
+    ),
+
+    snackBarTheme: SnackBarThemeData(
+      backgroundColor: cardColor,
+      contentTextStyle: TextStyle(
+        color: Colors.white,
+        fontSize: 15,
+        fontWeight: FontWeight.bold,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadiusGeometry.only(
+          topLeft: Radius.circular(15),
+          topRight: Radius.circular(15),
         ),
       ),
     ),
