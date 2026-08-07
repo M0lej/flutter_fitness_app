@@ -4,6 +4,7 @@ import 'package:gym_app/extensions/string_extensions.dart';
 import 'package:gym_app/hive/language.dart';
 import 'package:gym_app/hive/weight_unit.dart';
 import 'package:gym_app/settings/settings_provider.dart';
+import 'package:gym_app/utils/animated_box.dart';
 import 'package:gym_app/utils/appBars/my_app_bar.dart';
 import 'package:gym_app/utils/custom_card.dart';
 import 'package:gym_app/utils/my_divider.dart';
@@ -11,7 +12,8 @@ import 'package:gym_app/utils/my_segmented_button.dart';
 import 'package:provider/provider.dart';
 
 class SettingsTab extends StatefulWidget {
-  const SettingsTab({super.key});
+  final SettingsProvider settings;
+  const SettingsTab({super.key, required this.settings});
 
   @override
   State<SettingsTab> createState() => _SettingsTabState();
@@ -61,102 +63,112 @@ class _SettingsTabState extends State<SettingsTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<SettingsProvider, DataProvider>(
-      builder: (context, settings, appData, child) => CustomScrollView(
-        slivers: [
-          MyAppBar(title: settings.translations.settings, actions: []),
-          SliverPadding(
-            padding: const EdgeInsets.all(15),
-            sliver: SliverToBoxAdapter(
-              child: Form(
-                key: _formKey,
-                child: ListView(
-                  physics: NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.all(0),
-                  shrinkWrap: true,
-                  children: [
-                    CustomCard(
-                      title: settings.translations.language,
-                      children: [
-                        MySegmentedButton(
-                          segments: {"English", "Polski"},
-                          multiSelection: false,
-                          minSelection: 1,
-                          initialValues: {
-                            settings.getLanguageNameString(settings.language),
+    return CustomScrollView(
+      slivers: [
+        MyAppBar(title: widget.settings.translations.settings, actions: []),
+        SliverPadding(
+          padding: const EdgeInsets.all(15),
+          sliver: SliverToBoxAdapter(
+            child: Form(
+              key: _formKey,
+              child: ListView(
+                physics: NeverScrollableScrollPhysics(),
+                padding: const EdgeInsets.all(0),
+                shrinkWrap: true,
+                children: [
+                  CustomCard(
+                    index: 0,
+                    title: widget.settings.translations.language,
+                    children: [
+                      MySegmentedButton(
+                        segments: {"English", "Polski"},
+                        multiSelection: false,
+                        minSelection: 1,
+                        initialValues: {
+                          widget.settings.getLanguageNameString(
+                            widget.settings.language,
+                          ),
+                        },
+                        onChanged: (_, value, _) => setState(
+                          () => _language = value == "English"
+                              ? Language.en
+                              : Language.pl,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const MyDivider(),
+
+                  CustomCard(
+                    index: 1,
+                    title: widget.settings.translations.weightUnit
+                        .toUpperCase(),
+                    children: [
+                      MySegmentedButton(
+                        segments: {"Kg", "Lbs"},
+                        multiSelection: false,
+                        minSelection: 1,
+                        initialValues: {
+                          widget.settings.weightUnit.name
+                              .firstToUpperRestToLower(),
+                        },
+                        onChanged: (_, value, _) => setState(
+                          () => value == "Kg" ? WeightUnit.kg : WeightUnit.lbs,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const MyDivider(),
+
+                  CustomCard(
+                    index: 2,
+                    title: widget.settings.translations.weeklyTrainingGoal,
+                    children: [
+                      SizedBox(
+                        width: double.infinity,
+                        child: TextFormField(
+                          controller: _controller,
+                          textAlignVertical: TextAlignVertical.center,
+                          enableSuggestions: false,
+                          keyboardType: TextInputType.number,
+                          validator: (value) {
+                            if (value == null ||
+                                int.tryParse(value) == null ||
+                                value.isEmpty) {
+                              return widget
+                                  .settings
+                                  .translations
+                                  .pleaseEnterACorrectNumber;
+                            }
+                            int intValue = int.parse(value);
+                            if (intValue < 0 || intValue > 7) {
+                              return widget
+                                  .settings
+                                  .translations
+                                  .weeklyGoalNumberMustBe;
+                            }
+                            return null;
                           },
-                          onChanged: (_, value, _) => setState(
-                            () => _language = value == "English"
-                                ? Language.en
-                                : Language.pl,
+                          decoration: InputDecoration(
+                            hintText: widget.settings.weekWorkoutsGoal
+                                .toString(),
+                            suffixIcon: const Icon(Icons.onetwothree),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  ),
 
-                    const MyDivider(),
+                  const MyDivider(),
 
-                    CustomCard(
-                      title: settings.translations.weightUnit.toUpperCase(),
-                      children: [
-                        MySegmentedButton(
-                          segments: {"Kg", "Lbs"},
-                          multiSelection: false,
-                          minSelection: 1,
-                          initialValues: {
-                            settings.weightUnit.name.firstToUpperRestToLower(),
-                          },
-                          onChanged: (_, value, _) => setState(
-                            () =>
-                                value == "Kg" ? WeightUnit.kg : WeightUnit.lbs,
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const MyDivider(),
-
-                    CustomCard(
-                      title: settings.translations.weeklyTrainingGoal,
-                      children: [
-                        SizedBox(
-                          width: double.infinity,
-                          child: TextFormField(
-                            controller: _controller,
-                            textAlignVertical: TextAlignVertical.center,
-                            enableSuggestions: false,
-                            keyboardType: TextInputType.number,
-                            validator: (value) {
-                              if (value == null ||
-                                  int.tryParse(value) == null ||
-                                  value.isEmpty) {
-                                return settings
-                                    .translations
-                                    .pleaseEnterACorrectNumber;
-                              }
-                              int intValue = int.parse(value);
-                              if (intValue < 0 || intValue > 7) {
-                                return settings
-                                    .translations
-                                    .weeklyGoalNumberMustBe;
-                              }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                              hintText: settings.weekWorkoutsGoal.toString(),
-                              suffixIcon: const Icon(Icons.onetwothree),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const MyDivider(),
-
-                    TextButton.icon(
+                  AnimatedBox(
+                    index: 3,
+                    child: TextButton.icon(
                       onPressed: _save,
                       label: Text(
-                        settings.translations.save,
+                        widget.settings.translations.save,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).colorScheme.primary,
@@ -165,13 +177,13 @@ class _SettingsTabState extends State<SettingsTab> {
                       icon: const Icon(Icons.save),
                       iconAlignment: IconAlignment.end,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

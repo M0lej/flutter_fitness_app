@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app/data/data_provider.dart';
 import 'package:gym_app/settings/languages/translations.dart';
 import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/tabs/home_tab.dart';
 import 'package:gym_app/tabs/plans_tab.dart';
 import 'package:gym_app/tabs/settings_tab.dart';
+import 'package:gym_app/utils/custom_bottom_navigation_bar/custom_bottom_navigation_bar.dart';
+import 'package:gym_app/utils/custom_bottom_navigation_bar/custom_bottom_navigation_bar_item.dart';
 import 'package:provider/provider.dart';
 
 class AppTabsController extends StatefulWidget {
@@ -23,83 +26,83 @@ void changeTab(int index, BuildContext context) {
 
 class _AppTabsControllerState extends State<AppTabsController> {
   int _currentIndex = 0;
-
-  final _homeTab = GlobalKey<NavigatorState>();
-  final _plansTab = GlobalKey<NavigatorState>();
-  final _settingsTab = GlobalKey<NavigatorState>();
+  final PageController _controller = PageController();
 
   void _onTap(int index, BuildContext context) {
-    if (_currentIndex == index) {
-      switch (index) {
-        case 0:
-          _homeTab.currentState!.popUntil((route) => route.isFirst);
-          break;
-        case 1:
-          _plansTab.currentState!.popUntil((route) => route.isFirst);
-          break;
-        case 2:
-          _settingsTab.currentState!.popUntil((route) => route.isFirst);
-          break;
-      }
-    } else {
-      if (mounted) {
-        setState(() {
-          _currentIndex = index;
-        });
-      }
-    }
+    _controller.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.ease,
+    );
+    setState(() {
+      _currentIndex = index;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    Translations translations = context.select<SettingsProvider, Translations>(
-      (provider) => provider.translations,
-    );
-
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: <Widget>[
+      body: PageView(
+        controller: _controller,
+        children: [
           Navigator(
-            key: _homeTab,
             onGenerateRoute: (route) => MaterialPageRoute(
-              settings: route,
-              builder: (context) => HomeTab(),
+              builder: (_) => Consumer2<SettingsProvider, DataProvider>(
+                builder: (context, settings, appData, child) =>
+                    HomeTab(appData: appData, settings: settings),
+              ),
             ),
           ),
           Navigator(
-            key: _plansTab,
-            onGenerateRoute: (route) => MaterialPageRoute(
-              settings: route,
-              builder: (context) => PlansTab(),
-            ),
-          ),
-          Navigator(
-            key: _settingsTab,
             onGenerateRoute: (route) =>
-                MaterialPageRoute(builder: (context) => SettingsTab()),
+                MaterialPageRoute(builder: (_) =>  Consumer2<SettingsProvider, DataProvider>(
+                builder: (context, settings, appData, child) =>
+                    PlansTab(appData: appData, settings: settings),
+              ),),
+          ),
+          Navigator(
+            onGenerateRoute: (route) =>
+                MaterialPageRoute(builder: (_) =>  Consumer<SettingsProvider>(
+                builder: (context, settings, child) =>
+                    SettingsTab(settings: settings),
+              ),),
           ),
         ],
       ),
+
       // Bottom navigation bar
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar: CustomBottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (int index) => _onTap(index, context),
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.home),
-            label: translations.home,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.article),
-            label: translations.plans,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.settings),
-            label: translations.settings,
-          ),
+        icons: [
+          const Icon(Icons.home_outlined),
+          const Icon(Icons.article_outlined),
+          const Icon(Icons.settings_outlined),
+        ],
+        selectedIcons: [
+          const Icon(Icons.home),
+          const Icon(Icons.article),
+          const Icon(Icons.settings),
         ],
       ),
     );
   }
 }
+// BottomNavigationBar(
+//         currentIndex: _currentIndex,
+//         onTap: (int index) => _onTap(index, context),
+//         items: <BottomNavigationBarItem>[
+//           BottomNavigationBarItem(
+//             icon: const Icon(Icons.home),
+//             label: translations.home,
+//           ),
+//           BottomNavigationBarItem(
+//             icon: const Icon(Icons.article),
+//             label: translations.plans,
+//           ),
+//           BottomNavigationBarItem(
+//             icon: const Icon(Icons.settings),
+//             label: translations.settings,
+//           ),
+//         ],
+//       ),

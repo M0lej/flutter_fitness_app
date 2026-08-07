@@ -70,7 +70,11 @@ class NextWorkout extends StatelessWidget {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => WorkoutTab(plan: nextWorkoutPlan),
+          builder: (context) => WorkoutTab(
+            plan: nextWorkoutPlan,
+            settings: settings,
+            appData: appData,
+          ),
         ),
       );
     }

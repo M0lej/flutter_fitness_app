@@ -43,6 +43,7 @@ class ExerciseCard extends StatelessWidget {
         .toList();
 
     return CustomCard(
+      index: 0,
       children: [
         Row(
           spacing: 15,

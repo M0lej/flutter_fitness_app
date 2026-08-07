@@ -9,7 +9,13 @@ import 'package:gym_app/utils/my_segmented_button.dart';
 import 'package:provider/provider.dart';
 
 class ExerciseCreatorTab extends StatefulWidget {
-  const ExerciseCreatorTab({super.key});
+  final SettingsProvider settings;
+  final DataProvider appData;
+  const ExerciseCreatorTab({
+    super.key,
+    required this.settings,
+    required this.appData,
+  });
 
   @override
   State<ExerciseCreatorTab> createState() => _ExerciseCreatorTabState();
@@ -21,9 +27,15 @@ class _ExerciseCreatorTabState extends State<ExerciseCreatorTab> {
   final Set<String> _secondaryMuscles = {};
   String _equipment = "";
 
+  @override
+  void initState() {
+    super.initState();
+    _equipment = widget.settings.translations.equipmentSet.last; // None
+  }
+
   void _addExercise() {
     if (_name.isEmpty || _equipment.isEmpty) return;
-    context.read<DataProvider>().addExercise(
+    widget.appData.addExercise(
       _name,
       _equipment,
       _primaryMuscles.toList(),
@@ -52,7 +64,9 @@ class _ExerciseCreatorTabState extends State<ExerciseCreatorTab> {
     if (value) {
       setState(() => _equipment = equipment);
     } else {
-      setState(() => _equipment = "");
+      setState(
+        () => _equipment = widget.settings.translations.equipmentSet.last,
+      );
     }
   }
 
@@ -121,6 +135,7 @@ class _ExerciseCreatorTabState extends State<ExerciseCreatorTab> {
                             labelText: muscleCategory,
                             child: MySegmentedButton(
                               segments: muscleSet,
+                              initialValues: _primaryMuscles,
                               onChanged: (selectedSet, muscle, value) =>
                                   _changePrimaryMuscles(muscle, value),
                             ),
@@ -146,6 +161,7 @@ class _ExerciseCreatorTabState extends State<ExerciseCreatorTab> {
                             labelText: muscleCategory,
                             child: MySegmentedButton(
                               segments: muscleSet,
+                              initialValues: _secondaryMuscles,
                               onChanged: (selectedSet, muscle, value) =>
                                   _changeSecondaryMuscles(muscle, value),
                             ),
@@ -161,7 +177,9 @@ class _ExerciseCreatorTabState extends State<ExerciseCreatorTab> {
                   labelText: settings.translations.equipment,
                   child: MySegmentedButton(
                     multiSelection: false,
+                    minSelection: 1,
                     segments: settings.translations.equipmentSet,
+                    initialValues: {_equipment},
                     onChanged: (_, equipment, value) =>
                         _changeEquipment(equipment, value),
                   ),

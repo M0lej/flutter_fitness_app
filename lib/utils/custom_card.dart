@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app/utils/animated_card.dart';
 
 class CustomCard extends StatelessWidget {
   final String? title;
   final List<Widget> children;
   final EdgeInsetsGeometry? padding;
   final Color? color;
+  final int index;
 
   const CustomCard({
     super.key,
@@ -12,11 +14,13 @@ class CustomCard extends StatelessWidget {
     required this.children,
     this.padding,
     this.color,
+    required this.index
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return AnimatedCard(
+      index: index,
       color: color,
       child: Padding(
         padding: padding ?? EdgeInsetsGeometry.all(15),

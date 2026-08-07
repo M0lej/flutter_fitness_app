@@ -12,23 +12,23 @@ class HomeTabAppBar extends StatelessWidget {
     Translations translations = context.watch<SettingsProvider>().translations;
 
     return SliverSafeArea(
-      sliver: SliverAppBar(
+      sliver: SliverAppBar( 
         expandedHeight: 85,
         toolbarHeight: 85,
         collapsedHeight: 85,
         actionsPadding: const EdgeInsets.only(right: 5),
         title: Padding(
-          padding: const EdgeInsets.only(top: 12, left: 5),
+          padding: const EdgeInsets.only(left: 5),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // title based on the time
               Text(
                 '${hour < 13
-                    ? translations.goodAfternoon
+                    ? translations.goodMorning
                     : hour < 18
                     ? translations.goodAfternoon
-                    : translations.goodEvening}, Max! 👋',
+                    : translations.goodEvening} 👋',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: Theme.of(context).colorScheme.primary,

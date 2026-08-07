@@ -1,7 +1,6 @@
 import 'package:gym_app/hive/exercise.dart';
 import 'package:gym_app/hive/exercise_stats.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:collection/collection.dart';
 
 part 'month_stats.g.dart';
 
@@ -36,8 +35,6 @@ class MonthStats {
         .map((Exercise exercise) => ExerciseStats.get(exercise))
         .toList();
 
-    print('created exercises stats length: ${createdExercisesStats.length}');
-
     // check if there are new exercises with higher score and replace them
     for (ExerciseStats createdExerciseStats in createdExercisesStats) {
       int index = exercisesStats.indexWhere(
@@ -46,16 +43,13 @@ class MonthStats {
       );
 
       if (index == -1) {
-        print("New exercise");
         exercisesStats.add(createdExerciseStats);
         continue;
       }
 
       ExerciseStats oldExerciseStats = exercisesStats[index];
 
-      print('${createdExerciseStats.maxScore} ${oldExerciseStats.maxScore}');
       if (createdExerciseStats.maxScore > oldExerciseStats.maxScore) {
-        print("Found existing, replacing");
         exercisesStats.remove(oldExerciseStats);
         exercisesStats.insert(index, createdExerciseStats);
       }

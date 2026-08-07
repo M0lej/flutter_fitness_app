@@ -137,33 +137,23 @@ class DataProvider extends ChangeNotifier {
 
     changedLogs.insert(index, workoutLog);
 
-    MonthStats monthStats =
-        monthsStats.firstWhereOrNull(
-          (MonthStats monthStats) =>
-              monthStats.date.month == workoutLog.end!.month,
-        ) ??
-        MonthStats.empty();
-
-    List<MonthStats> updatedMonthsStats = monthsStats
-        .where((MonthStats m) => m != monthStats)
-        .toList();
-
-    monthStats.update(workoutLog.plan.exercises);
-    updatedMonthsStats.add(monthStats);
-
     _data.workoutLogs = changedLogs;
-    _data.monthsStats = updatedMonthsStats;
+    _data.monthsStats = getUpdatedMonthsStatsList(workoutLog);
 
     await _save();
   }
 
   // same as above
   Future<void> removeLog(WorkoutLog workoutLog) async {
+    if (!workoutLogs.contains(workoutLog)) return;
+
     List<WorkoutLog> changedWorkoutLogs = workoutLogs
         .where((WorkoutLog storedWorkoutLog) => storedWorkoutLog != workoutLog)
         .toList();
 
     _data.workoutLogs = changedWorkoutLogs;
+    _data.completedWorkoutsCount = changedWorkoutLogs.length;
+    _data.monthsStats = getUpdatedMonthsStatsList(workoutLog);
 
     await _save();
   }
@@ -231,6 +221,23 @@ class DataProvider extends ChangeNotifier {
     _data.customExercises.add(newExercise);
 
     await _save();
+  }
+
+  List<MonthStats> getUpdatedMonthsStatsList(WorkoutLog workoutLog) {
+    MonthStats monthStats =
+        monthsStats.firstWhereOrNull(
+          (MonthStats monthStats) =>
+              monthStats.date.month == workoutLog.end!.month,
+        ) ??
+        MonthStats.empty();
+
+    List<MonthStats> updatedMonthsStats = monthsStats
+        .where((MonthStats m) => m != monthStats)
+        .toList();
+
+    monthStats.update(workoutLog.plan.exercises);
+
+    return updatedMonthsStats;
   }
 
   // get list of workout logs completed this week

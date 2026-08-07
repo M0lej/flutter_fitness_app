@@ -11,14 +11,21 @@ import 'package:gym_app/utils/exercise_card.dart';
 import 'package:gym_app/utils/my_alert_dialog.dart';
 import 'package:gym_app/utils/my_divider.dart';
 import 'package:gym_app/utils/my_icon.dart';
-import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 enum Direction { up, down }
 
 class PlanCreatorTab extends StatefulWidget {
+  final SettingsProvider settings;
+  final DataProvider appData;
+
   final Plan? planToEdit;
-  const PlanCreatorTab({super.key, this.planToEdit});
+  const PlanCreatorTab({
+    super.key,
+    this.planToEdit,
+    required this.appData,
+    required this.settings,
+  });
 
   @override
   State<PlanCreatorTab> createState() => _PlanCreatorTabState();
@@ -51,6 +58,8 @@ class _PlanCreatorTabState extends State<PlanCreatorTab> {
       context,
       MaterialPageRoute(
         builder: (context) => ExerciseSearchTab(
+          appData: widget.appData,
+          settings: widget.settings,
           excludedExercisesIds: _exercises.map((Exercise ex) => ex.id),
           addExercise: (Exercise exercise) {
             setState(() {
@@ -95,7 +104,7 @@ class _PlanCreatorTabState extends State<PlanCreatorTab> {
 
     String uuid = Uuid().v1().toString();
 
-    context.read<DataProvider>().addPlan(
+    widget.appData.addPlan(
       Plan(
         name: _name,
         exercises: _exercises,
@@ -112,7 +121,7 @@ class _PlanCreatorTabState extends State<PlanCreatorTab> {
       return;
     }
 
-    context.read<DataProvider>().editPlan(
+    widget.appData.editPlan(
       Plan(
         name: _name,
         exercises: _exercises,
@@ -185,11 +194,12 @@ class _PlanCreatorTabState extends State<PlanCreatorTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer2<SettingsProvider, DataProvider>(
-      builder: (context, settings, appData, child) => CustomScrollView(
+    return Material(
+      color: AppTheme.backgroundBlack,
+      child: CustomScrollView(
         slivers: [
           MyAppBar(
-            title: settings.translations.planCreator,
+            title: widget.settings.translations.planCreator,
             actions: [
               IconButton(
                 onPressed: () => widget.planToEdit != null
@@ -212,7 +222,7 @@ class _PlanCreatorTabState extends State<PlanCreatorTab> {
             padding: const EdgeInsets.all(15),
             sliver: SliverList.list(
               children: [
-                Text(settings.translations.icon),
+                Text(widget.settings.translations.icon),
 
                 const MyDivider(),
 
@@ -227,7 +237,7 @@ class _PlanCreatorTabState extends State<PlanCreatorTab> {
 
                 const MyDivider(),
 
-                Text(settings.translations.name),
+                Text(widget.settings.translations.name),
 
                 const MyDivider(),
 
@@ -240,8 +250,10 @@ class _PlanCreatorTabState extends State<PlanCreatorTab> {
                     enableSuggestions: false,
                     onChanged: (value) => _name = value,
                     decoration: InputDecoration(
-                      hintText:
-                          settings.translations.enterANameForYourWorkoutPlan,
+                      hintText: widget
+                          .settings
+                          .translations
+                          .enterANameForYourWorkoutPlan,
                       suffixIcon: const Icon(Icons.abc),
                     ),
                   ),
@@ -252,7 +264,7 @@ class _PlanCreatorTabState extends State<PlanCreatorTab> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(settings.translations.exercises2),
+                    Text(widget.settings.translations.exercises2),
                     IconButton(
                       onPressed: _addExercise,
                       icon: const Icon(Icons.add, color: AppTheme.red),

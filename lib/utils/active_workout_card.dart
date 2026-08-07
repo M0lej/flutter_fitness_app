@@ -27,10 +27,15 @@ class ActiveWorkoutCard extends StatelessWidget {
       onTap: () => Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => WorkoutTab(plan: appData.activeWorkout!.plan),
+          builder: (context) => WorkoutTab(
+            plan: appData.activeWorkout!.plan,
+            appData: appData,
+            settings: settings,
+          ),
         ),
       ),
       child: CustomCard(
+        index: 0,
         color: AppTheme.red,
         children: [
           Row(

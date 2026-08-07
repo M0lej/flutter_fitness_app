@@ -7,6 +7,7 @@ import 'package:gym_app/hive/exercise.dart';
 import 'package:gym_app/hive/workout_set.dart';
 import 'package:gym_app/hive/weight_unit.dart';
 import 'package:gym_app/settings/settings_provider.dart';
+import 'package:gym_app/utils/animated_card.dart';
 import 'package:gym_app/utils/appBars/my_app_bar.dart';
 import 'package:gym_app/utils/my_divider.dart';
 import 'package:provider/provider.dart';
@@ -199,7 +200,8 @@ class _ExerciseTabState extends State<ExerciseTab> {
                 ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) => Card(
+                  itemBuilder: (context, index) => AnimatedCard(
+                    index: index,
                     key: Key(index.toString()),
                     child: Padding(
                       padding: const EdgeInsets.all(15),

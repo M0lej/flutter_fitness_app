@@ -30,7 +30,8 @@ abstract class Translations {
   Function(String) get onlyOneSessionDesc;
   String get created;
 
-  String get areYouSureYouWantToDelete;
+  String get areYouSureYouWantToDeletePlan;
+  String get areYouSureYouWantToDeleteLog;
   String get thisActionCannotBeUndone;
 
   String get delete;
@@ -75,7 +76,7 @@ abstract class Translations {
 
   String get language;
   String get timeIsUp;
-  
+
   String get save;
   String get saved;
   String get weeklyTrainingGoal;

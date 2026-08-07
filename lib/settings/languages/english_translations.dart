@@ -111,8 +111,12 @@ class EnglishTranslations extends Translations {
   String get created => "Created";
 
   @override
-  String get areYouSureYouWantToDelete =>
+  String get areYouSureYouWantToDeletePlan =>
       "Are you sure you want to delete workout plan with name";
+
+  @override
+  String get areYouSureYouWantToDeleteLog =>
+      "Are you sure you want to delete thus workout log?";
 
   @override
   String get thisActionCannotBeUndone => "This action cannot be undone!";
@@ -264,6 +268,8 @@ class EnglishTranslations extends Translations {
     'Bodyweight',
 
     'Other',
+
+    'None',
   };
 
   @override

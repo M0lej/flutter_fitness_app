@@ -6,6 +6,7 @@ class AppTheme {
   static const Color borderColor = Color.fromARGB(255, 52, 48, 62);
   static const Color red = Color.fromARGB(255, 237, 20, 5);
   static const Color cardColor = Color.fromARGB(255, 31, 29, 37);
+  static const Color secondary = Colors.white70;
 
   ThemeData dark = ThemeData(
     useMaterial3: true,
@@ -14,10 +15,7 @@ class AppTheme {
     focusColor: const Color.fromARGB(255, 45, 42, 54),
     highlightColor: red,
 
-    colorScheme: ColorScheme.dark(
-      primary: Colors.white,
-      secondary: Colors.white70,
-    ),
+    colorScheme: ColorScheme.dark(primary: Colors.white, secondary: secondary),
 
     scaffoldBackgroundColor: backgroundBlack,
 
@@ -33,7 +31,9 @@ class AppTheme {
     bottomNavigationBarTheme: BottomNavigationBarThemeData(
       backgroundColor: cardColor,
       selectedIconTheme: IconThemeData(color: red),
+      unselectedIconTheme: IconThemeData(color: secondary, size: 20),
       selectedItemColor: red,
+      type: BottomNavigationBarType.shifting,
     ),
     iconTheme: IconThemeData(color: const Color.fromARGB(255, 237, 20, 5)),
 
@@ -111,17 +111,11 @@ class AppTheme {
     ),
 
     snackBarTheme: SnackBarThemeData(
-      backgroundColor: cardColor,
+      backgroundColor: backgroundBlack,
       contentTextStyle: TextStyle(
         color: Colors.white,
         fontSize: 15,
         fontWeight: FontWeight.bold,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadiusGeometry.only(
-          topLeft: Radius.circular(15),
-          topRight: Radius.circular(15),
-        ),
       ),
     ),
   );

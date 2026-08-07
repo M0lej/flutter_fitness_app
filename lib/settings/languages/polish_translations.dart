@@ -111,8 +111,12 @@ class PolishTranslations extends Translations {
   String get created => "Utworzono";
 
   @override
-  String get areYouSureYouWantToDelete =>
+  String get areYouSureYouWantToDeletePlan =>
       "Czy na pewno chcesz usunąć plan treningowy o nazwie";
+
+  @override
+  String get areYouSureYouWantToDeleteLog =>
+      "Czy na pewno chcesz usunąć ten zapis treningu?";
 
   @override
   String get thisActionCannotBeUndone => "Tej czynności nie da się odwrócić!";
@@ -284,6 +288,8 @@ class PolishTranslations extends Translations {
     'Masa własnego ciała',
 
     'Inne',
+
+    'Brak',
   };
 
   @override
@@ -315,7 +321,6 @@ class PolishTranslations extends Translations {
   String get weeklyGoalNumberMustBe =>
       "Prosze wprowadzić liczbę znajdującą się w przedziale od 0 do 7";
 
-@override
-        String get workoutContinue => "Kontunuuj";
-
+  @override
+  String get workoutContinue => "Kontunuuj";
 }

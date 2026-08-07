@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:gym_app/config.dart';
 import 'package:gym_app/data/data_provider.dart';
 import 'package:gym_app/hive/plan.dart';
 import 'package:gym_app/hive/workout_log.dart';
@@ -7,27 +8,32 @@ import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/tabs/plan_creator_tab.dart';
 import 'package:gym_app/tabs/workout_tab.dart';
 import 'package:gym_app/themes/app_theme.dart';
+import 'package:gym_app/utils/animated_card.dart';
 import 'package:gym_app/utils/my_alert_dialog.dart';
 import 'package:gym_app/utils/my_icon.dart';
 import 'package:provider/provider.dart';
 
-class PlanCard extends StatefulWidget {
+class AnimatedPlanListItem extends StatefulWidget {
   final DataProvider appData;
   final SettingsProvider settings;
 
   final Plan plan;
-  const PlanCard({
+
+  final int index;
+
+  const AnimatedPlanListItem({
     super.key,
     required this.plan,
     required this.appData,
     required this.settings,
+    required this.index,
   });
 
   @override
-  State<PlanCard> createState() => _PlanCardState();
+  State<AnimatedPlanListItem> createState() => _AnimatedPlanListItemState();
 }
 
-class _PlanCardState extends State<PlanCard> {
+class _AnimatedPlanListItemState extends State<AnimatedPlanListItem> {
   bool _propertiesExpanded = false;
 
   // show / hide properties
@@ -43,7 +49,7 @@ class _PlanCardState extends State<PlanCard> {
       context: context,
       builder: (context) => MyAlertDialog(
         title:
-            '${widget.settings.translations.areYouSureYouWantToDelete} "${widget.plan.name}" ?',
+            '${widget.settings.translations.areYouSureYouWantToDeletePlan} "${widget.plan.name}" ?',
         description:
             '\n\n${widget.settings.translations.thisActionCannotBeUndone}',
         buttons: [
@@ -84,7 +90,11 @@ class _PlanCardState extends State<PlanCard> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PlanCreatorTab(planToEdit: widget.plan),
+        builder: (context) => PlanCreatorTab(
+          planToEdit: widget.plan,
+          appData: widget.appData,
+          settings: widget.settings,
+        ),
       ),
     );
   }
@@ -119,13 +129,20 @@ class _PlanCardState extends State<PlanCard> {
 
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => WorkoutTab(plan: widget.plan)),
+      MaterialPageRoute(
+        builder: (context) => WorkoutTab(
+          plan: widget.plan,
+          settings: widget.settings,
+          appData: widget.appData,
+        ),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return AnimatedCard(
+      index: widget.index,
       child: Padding(
         padding: const EdgeInsets.all(15),
         child: Column(
