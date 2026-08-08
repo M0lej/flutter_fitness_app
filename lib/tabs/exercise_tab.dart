@@ -2,24 +2,31 @@ import 'dart:async';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:gym_app/data/data_provider.dart';
 import 'package:gym_app/extensions/weight_extensions.dart';
 import 'package:gym_app/hive/exercise.dart';
 import 'package:gym_app/hive/workout_set.dart';
 import 'package:gym_app/hive/weight_unit.dart';
 import 'package:gym_app/settings/settings_provider.dart';
-import 'package:gym_app/utils/animated_card.dart';
 import 'package:gym_app/utils/appBars/my_app_bar.dart';
 import 'package:gym_app/utils/my_divider.dart';
-import 'package:provider/provider.dart';
+import 'package:gym_app/utils/workout_set_item.dart';
 import 'package:uuid/uuid.dart';
 
 class ExerciseTab extends StatefulWidget {
+  final SettingsProvider settings;
+  final DataProvider appData;
+  final bool viewMode;
+
   final Exercise exercise;
   final Function refreshWorkoutTabWidget;
   const ExerciseTab({
     super.key,
     required this.exercise,
     required this.refreshWorkoutTabWidget,
+    required this.appData,
+    required this.settings,
+    this.viewMode = false,
   });
 
   @override
@@ -38,14 +45,14 @@ class _ExerciseTabState extends State<ExerciseTab> {
 
   @override
   void initState() {
+    super.initState();
+
     _weightControllers = List.generate(
       widget.exercise.workoutSets.length,
       (index) => TextEditingController(
         text: widget.exercise.workoutSets[index].weight.toString(),
       ),
     );
-
-    super.initState();
 
     if (widget.exercise.images.isNotEmpty) {
       _path = '$_defaultPath/${widget.exercise.images[0]}';
@@ -134,178 +141,90 @@ class _ExerciseTabState extends State<ExerciseTab> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<SettingsProvider>(
-      builder: (context, settingsModelValues, child) => CustomScrollView(
-        slivers: [
-          // app bar
-          MyAppBar(
-            title: widget.exercise.name,
-            automaticallyImplyLeading: true,
-            actions: [
-              IconButton(
-                onPressed: _addWorkoutSet,
-                icon: Icon(Icons.add, size: 30),
-                style: ButtonStyle(
-                  padding: WidgetStateProperty.all(EdgeInsets.all(0)),
-                  backgroundColor: WidgetStateProperty.all(Colors.red),
+    return CustomScrollView(
+      slivers: [
+        // app bar
+        MyAppBar(
+          title: widget.exercise.name,
+          automaticallyImplyLeading: true,
+          actions: [
+            IconButton(
+              onPressed: _addWorkoutSet,
+              icon: const Icon(Icons.add, size: 30),
+              style: ButtonStyle(
+                padding: WidgetStateProperty.all(EdgeInsets.all(0)),
+                backgroundColor: WidgetStateProperty.all(Colors.red),
+              ),
+            ),
+          ],
+        ),
+
+        SliverPadding(
+          padding: const EdgeInsets.all(15),
+          sliver: SliverList.list(
+            children: [
+              if (widget.exercise.images.isNotEmpty)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.asset(_path),
                 ),
+
+              MyDivider(),
+
+              if (widget.exercise.instructions != null)
+                Text(
+                  widget.settings.translations.instructions,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15,
+                  ),
+                ),
+
+              if (widget.exercise.instructions != null)
+                AutoSizeText(
+                  widget.exercise.instructions?.join('\n') ?? '',
+                  style: const TextStyle(fontSize: 13),
+                ),
+
+              Row(
+                spacing: 15,
+                children: [
+                  Text(widget.settings.translations.weightUnit),
+                  DropdownButton(
+                    value: widget.exercise.weightUnit,
+                    items: [
+                      DropdownMenuItem(
+                        value: WeightUnit.kg,
+                        child: const Text("kg"),
+                      ),
+                      DropdownMenuItem(
+                        value: WeightUnit.lbs,
+                        child: const Text("lbs"),
+                      ),
+                    ],
+                    onChanged: _onWeightUnitChange,
+                  ),
+                ],
+              ),
+              ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (context, index) => WorkoutSetItem(
+                  exercise: widget.exercise,
+                  index: index,
+                  onRepCountChange: _onRepCountChange,
+                  onWeightChange: _onWeightChange,
+                  settings: widget.settings,
+                  weightController: _weightControllers[index],
+                  removeSet: _removeSet,
+                ),
+                itemCount: widget.exercise.workoutSets.length,
+                separatorBuilder: (context, index) => const MyDivider(),
               ),
             ],
           ),
-
-          SliverPadding(
-            padding: const EdgeInsets.all(15),
-            sliver: SliverList.list(
-              children: [
-                if (widget.exercise.images.isNotEmpty)
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.asset(_path),
-                  ),
-
-                MyDivider(),
-
-                if (widget.exercise.instructions != null)
-                  const Text(
-                    "Instructions",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                  ),
-
-                if (widget.exercise.instructions != null)
-                  AutoSizeText(
-                    widget.exercise.instructions?.join('\n') ?? '',
-                    style: TextStyle(fontSize: 13),
-                  ),
-
-                Row(
-                  spacing: 15,
-                  children: [
-                    Text(settingsModelValues.translations.weightUnit),
-                    DropdownButton(
-                      value: widget.exercise.weightUnit,
-                      items: [
-                        DropdownMenuItem(
-                          value: WeightUnit.kg,
-                          child: const Text("kg"),
-                        ),
-                        DropdownMenuItem(
-                          value: WeightUnit.lbs,
-                          child: const Text("lbs"),
-                        ),
-                      ],
-                      onChanged: _onWeightUnitChange,
-                    ),
-                  ],
-                ),
-                ListView.separated(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) => AnimatedCard(
-                    index: index,
-                    key: Key(index.toString()),
-                    child: Padding(
-                      padding: const EdgeInsets.all(15),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              spacing: 15,
-                              children: [
-                                Column(
-                                  spacing: 10,
-                                  children: [
-                                    SizedBox(
-                                      width: 55,
-                                      child: TextFormField(
-                                        key: Key(
-                                          '${widget.exercise.workoutSets[index].id}_reps',
-                                        ),
-                                        initialValue: widget
-                                            .exercise
-                                            .workoutSets[index]
-                                            .reps
-                                            .toString(),
-                                        onChanged: (value) =>
-                                            _onRepCountChange(index, value),
-                                        keyboardType: TextInputType.number,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                    Text(
-                                      settingsModelValues.translations.reps,
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.primary,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Column(
-                                  spacing: 10,
-                                  children: [
-                                    Row(
-                                      spacing: 10,
-                                      children: [
-                                        SizedBox(
-                                          width: 65,
-                                          child: TextFormField(
-                                            key: Key(
-                                              '${widget.exercise.workoutSets[index].id}_weight',
-                                            ),
-                                            controller:
-                                                _weightControllers[index],
-                                            onChanged: (value) =>
-                                                _onWeightChange(index, value),
-                                            keyboardType: TextInputType.number,
-                                            textAlign: TextAlign.center,
-                                          ),
-                                        ),
-                                        Text(
-                                          widget.exercise.weightUnit.name,
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            color: Theme.of(
-                                              context,
-                                            ).colorScheme.primary,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-
-                                    Text(
-                                      settingsModelValues.translations.weight,
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        color: Theme.of(
-                                          context,
-                                        ).colorScheme.primary,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () =>
-                                _removeSet(widget.exercise.workoutSets[index]),
-                            icon: Icon(Icons.delete),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  itemCount: widget.exercise.workoutSets.length,
-                  separatorBuilder: (context, index) => MyDivider(),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

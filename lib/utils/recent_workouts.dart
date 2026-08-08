@@ -54,10 +54,7 @@ class RecentWorkouts extends StatelessWidget {
               child: Row(
                 spacing: 15,
                 children: [
-                  const MyIcon(
-                    size: 40,
-                    icon: FaIcon(FontAwesomeIcons.dumbbell),
-                  ),
+                  MyIcon(size: 40, icon: workoutLog.plan.icon),
                   Expanded(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

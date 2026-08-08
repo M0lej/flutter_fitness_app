@@ -1,6 +1,5 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:gym_app/config.dart';
 import 'package:gym_app/data/data_provider.dart';
 import 'package:gym_app/hive/plan.dart';
 import 'package:gym_app/hive/workout_log.dart';

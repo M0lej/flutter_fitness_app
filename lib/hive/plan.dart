@@ -6,12 +6,12 @@ import 'package:hive/hive.dart';
 
 part 'plan.g.dart';
 
-Map<String, Widget> icons = {
-  FontAwesomeIcons.dumbbell.toString(): FaIcon(FontAwesomeIcons.dumbbell),
-  Icons.sports_baseball.toString(): Icon(Icons.sports_baseball),
-  Icons.sports.toString(): Icon(Icons.sports),
-  Icons.sports_gymnastics.toString(): Icon(Icons.sports_gymnastics),
-  Icons.sports_mma.toString(): Icon(Icons.sports_mma),
+const Map<String, Widget> icons = {
+  'dumbbell': FaIcon(FontAwesomeIcons.dumbbell),
+  'sports_baseball': Icon(Icons.sports_baseball),
+  'sports': Icon(Icons.sports),
+  'sports_gymnastics': Icon(Icons.sports_gymnastics),
+  'sports_mma': Icon(Icons.sports_mma),
 };
 
 @HiveType(typeId: 2)

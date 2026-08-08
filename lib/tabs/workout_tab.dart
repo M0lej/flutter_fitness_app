@@ -191,7 +191,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
     }
 
     Navigator.pop(context);
-}
+  }
 
   void _showLogDeletionPopup() {
     if (widget.logToEdit == null) return;
@@ -312,6 +312,8 @@ class _WorkoutTabState extends State<WorkoutTab> {
                           builder: (_) => ExerciseTab(
                             exercise: exercise,
                             refreshWorkoutTabWidget: _refreshWorkoutTabWidget,
+                            settings: widget.settings,
+                            appData: widget.appData,
                           ),
                         ),
                       ),

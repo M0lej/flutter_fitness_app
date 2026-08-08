@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:gym_app/data/data_provider.dart';
-import 'package:gym_app/settings/languages/translations.dart';
 import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/tabs/home_tab.dart';
 import 'package:gym_app/tabs/plans_tab.dart';
 import 'package:gym_app/tabs/settings_tab.dart';
 import 'package:gym_app/utils/custom_bottom_navigation_bar/custom_bottom_navigation_bar.dart';
-import 'package:gym_app/utils/custom_bottom_navigation_bar/custom_bottom_navigation_bar_item.dart';
 import 'package:provider/provider.dart';
 
 class AppTabsController extends StatefulWidget {
@@ -44,6 +42,7 @@ class _AppTabsControllerState extends State<AppTabsController> {
     return Scaffold(
       body: PageView(
         controller: _controller,
+        onPageChanged: (index) => setState(() => _currentIndex = index),
         children: [
           Navigator(
             onGenerateRoute: (route) => MaterialPageRoute(
@@ -54,18 +53,20 @@ class _AppTabsControllerState extends State<AppTabsController> {
             ),
           ),
           Navigator(
-            onGenerateRoute: (route) =>
-                MaterialPageRoute(builder: (_) =>  Consumer2<SettingsProvider, DataProvider>(
+            onGenerateRoute: (route) => MaterialPageRoute(
+              builder: (_) => Consumer2<SettingsProvider, DataProvider>(
                 builder: (context, settings, appData, child) =>
                     PlansTab(appData: appData, settings: settings),
-              ),),
+              ),
+            ),
           ),
           Navigator(
-            onGenerateRoute: (route) =>
-                MaterialPageRoute(builder: (_) =>  Consumer<SettingsProvider>(
+            onGenerateRoute: (route) => MaterialPageRoute(
+              builder: (_) => Consumer<SettingsProvider>(
                 builder: (context, settings, child) =>
                     SettingsTab(settings: settings),
-              ),),
+              ),
+            ),
           ),
         ],
       ),
@@ -88,21 +89,3 @@ class _AppTabsControllerState extends State<AppTabsController> {
     );
   }
 }
-// BottomNavigationBar(
-//         currentIndex: _currentIndex,
-//         onTap: (int index) => _onTap(index, context),
-//         items: <BottomNavigationBarItem>[
-//           BottomNavigationBarItem(
-//             icon: const Icon(Icons.home),
-//             label: translations.home,
-//           ),
-//           BottomNavigationBarItem(
-//             icon: const Icon(Icons.article),
-//             label: translations.plans,
-//           ),
-//           BottomNavigationBarItem(
-//             icon: const Icon(Icons.settings),
-//             label: translations.settings,
-//           ),
-//         ],
-//       ),

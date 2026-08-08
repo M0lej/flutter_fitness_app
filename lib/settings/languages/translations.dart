@@ -84,4 +84,6 @@ abstract class Translations {
   String get weeklyGoalNumberMustBe;
 
   String get workoutContinue;
+
+  String get instructions;
 }

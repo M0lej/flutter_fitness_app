@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gym_app/data/data_provider.dart';
 import 'package:gym_app/extensions/string_extensions.dart';
 import 'package:gym_app/hive/language.dart';
 import 'package:gym_app/hive/weight_unit.dart';

@@ -302,4 +302,7 @@ class EnglishTranslations extends Translations {
 
   @override
   String get workoutContinue => "Continue";
+
+  @override
+  String get instructions => "Instructions";
 }

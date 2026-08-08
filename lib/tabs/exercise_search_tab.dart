@@ -3,15 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:gym_app/data/data_provider.dart';
 import 'package:gym_app/data/exercises.dart';
 import 'package:gym_app/hive/exercise.dart';
-import 'package:gym_app/settings/languages/translations.dart';
 import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/tabs/exercise_creator_tab.dart';
 import 'package:gym_app/utils/animated_card.dart';
 import 'package:gym_app/utils/appBars/my_app_bar.dart';
+import 'package:gym_app/utils/exercise_info_card.dart';
 import 'package:gym_app/utils/exercise_search_tab/exercise_search_tab_switch_button.dart';
 import 'package:gym_app/utils/my_divider.dart';
 import 'package:gym_app/utils/my_image.dart';
-import 'package:provider/provider.dart';
 
 enum ExercisesSource { library, custom }
 
@@ -217,52 +216,11 @@ class _ExerciseSearchTabState extends State<ExerciseSearchTab> {
             itemBuilder: (context, index) {
               Exercise exercise = _exercises[index];
 
-              return AnimatedCard(
+              return ExerciseInfoCard(
                 index: index,
-                indexDelayedAnimation: false,
-                child: Padding(
-                  padding: const EdgeInsets.all(15),
-                  child: Row(
-                    spacing: 15,
-                    children: [
-                      if (exercise.images.isNotEmpty)
-                        MyImage(
-                          size: 150,
-                          path: './assets/exercises/${exercise.images[0]}',
-                        ),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            AutoSizeText(
-                              exercise.name,
-                              maxFontSize: 15,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(fontSize: 15),
-                            ),
-                            AutoSizeText(
-                              [
-                                ...exercise.primaryMuscles ?? [],
-                                ...exercise.secondaryMuscles ?? [],
-                              ].join(", "),
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
-                              maxLines: 4,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                        ),
-                      ),
-                      IconButton(
-                        onPressed: () => widget.addExercise(exercise),
-                        icon: const Icon(Icons.add),
-                      ),
-                    ],
-                  ),
-                ),
+                exercise: exercise,
+                addExercise: widget.addExercise,
+                settings: widget.settings,
               );
             },
           ),

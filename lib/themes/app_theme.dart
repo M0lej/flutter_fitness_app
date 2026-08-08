@@ -85,7 +85,7 @@ class AppTheme {
       iconColor: Colors.white70,
       suffixIconColor: Colors.white70,
       prefixIconColor: Colors.white70,
-      contentPadding: const EdgeInsets.all(15),
+      contentPadding: const EdgeInsets.all(10),
       isDense: true,
     ),
 

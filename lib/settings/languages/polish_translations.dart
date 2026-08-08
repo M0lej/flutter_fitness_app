@@ -323,4 +323,7 @@ class PolishTranslations extends Translations {
 
   @override
   String get workoutContinue => "Kontunuuj";
+
+  @override
+  String get instructions => "Instrukcje";
 }

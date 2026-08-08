@@ -4,6 +4,7 @@ import 'package:gym_app/data/data_provider.dart';
 import 'package:gym_app/hive/exercise.dart';
 import 'package:gym_app/hive/plan.dart';
 import 'package:gym_app/settings/settings_provider.dart';
+import 'package:gym_app/tabs/exercise_preview_tab.dart';
 import 'package:gym_app/tabs/exercise_search_tab.dart';
 import 'package:gym_app/themes/app_theme.dart';
 import 'package:gym_app/utils/appBars/my_app_bar.dart';
@@ -32,7 +33,7 @@ class PlanCreatorTab extends StatefulWidget {
 }
 
 class _PlanCreatorTabState extends State<PlanCreatorTab> {
-  String _iconName = FontAwesomeIcons.dumbbell.toString();
+  String _iconName = 'dumbbell';
   String _name = "";
   List<Exercise> _exercises = <Exercise>[];
   late Plan? _copiedPlanToEdit;
@@ -147,32 +148,26 @@ class _PlanCreatorTabState extends State<PlanCreatorTab> {
               padding: EdgeInsets.all(15),
               children: [
                 GestureDetector(
-                  onTap: () => _changeIcon(
-                    FontAwesomeIcons.dumbbell.toString(),
-                    context,
-                  ),
+                  onTap: () => _changeIcon('dumbbell', context),
                   child: MyIcon(
                     size: 10,
                     icon: FaIcon(FontAwesomeIcons.dumbbell),
                   ),
                 ),
                 GestureDetector(
-                  onTap: () =>
-                      _changeIcon(Icons.sports_baseball.toString(), context),
+                  onTap: () => _changeIcon('sports_baseball', context),
                   child: MyIcon(size: 10, icon: Icon(Icons.sports_baseball)),
                 ),
                 GestureDetector(
-                  onTap: () => _changeIcon(Icons.sports.toString(), context),
+                  onTap: () => _changeIcon('sports', context),
                   child: MyIcon(size: 10, icon: Icon(Icons.sports)),
                 ),
                 GestureDetector(
-                  onTap: () =>
-                      _changeIcon(Icons.sports_gymnastics.toString(), context),
+                  onTap: () => _changeIcon('sports_gymnastics', context),
                   child: MyIcon(size: 10, icon: Icon(Icons.sports_gymnastics)),
                 ),
                 GestureDetector(
-                  onTap: () =>
-                      _changeIcon(Icons.sports_mma.toString(), context),
+                  onTap: () => _changeIcon('sports_mma', context),
                   child: MyIcon(size: 10, icon: Icon(Icons.sports_mma)),
                 ),
               ],
@@ -190,6 +185,16 @@ class _PlanCreatorTabState extends State<PlanCreatorTab> {
       _icon = getIconWidgetByName(iconName);
     });
     Navigator.pop(dialogContext);
+  }
+
+  void _navigateToExerciseDescription(BuildContext context, Exercise exercise) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            ExercisePreviewTab(exercise: exercise, settings: widget.settings),
+      ),
+    );
   }
 
   @override
@@ -279,12 +284,18 @@ class _PlanCreatorTabState extends State<PlanCreatorTab> {
                   itemCount: _exercises.length,
                   physics: const NeverScrollableScrollPhysics(),
                   separatorBuilder: (context, index) => MyDivider(),
-                  itemBuilder: (context, index) => ExerciseCard(
-                    exercise: _exercises[index],
-                    removeExercise: _removeExercise,
-                    isFirst: index == 0,
-                    isLast: index == _exercises.length - 1,
-                    changeOrder: _changeExerciseOrder,
+                  itemBuilder: (context, index) => GestureDetector(
+                    onTap: () => _navigateToExerciseDescription(
+                      context,
+                      _exercises[index],
+                    ),
+                    child: ExerciseCard(
+                      exercise: _exercises[index],
+                      removeExercise: _removeExercise,
+                      isFirst: index == 0,
+                      isLast: index == _exercises.length - 1,
+                      changeOrder: _changeExerciseOrder,
+                    ),
                   ),
                 ),
               ],
