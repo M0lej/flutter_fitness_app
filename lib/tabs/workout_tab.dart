@@ -150,6 +150,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
             onPressed: () {
               _updatePlan();
               Navigator.pop(context);
+              Navigator.pop(appContext);
             },
             label: Text(
               widget.settings.translations.yes,
@@ -159,6 +160,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
           ),
           TextButton.icon(
             onPressed: () {
+              Navigator.pop(context);
               Navigator.pop(appContext);
             },
             label: Text(
@@ -182,7 +184,6 @@ class _WorkoutTabState extends State<WorkoutTab> {
 
   void _updatePlan() {
     widget.appData.editPlan(_copiedPlan);
-    Navigator.pop(context);
   }
 
   void _goBackAndUpdateActiveWorkout() {
