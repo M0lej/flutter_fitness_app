@@ -20,12 +20,17 @@ class AnimatedPlanListItem extends StatefulWidget {
 
   final int index;
 
+  final bool propertiesExpanded;
+  final Function(int) expandProperties;
+
   const AnimatedPlanListItem({
     super.key,
     required this.plan,
     required this.appData,
     required this.settings,
     required this.index,
+    required this.propertiesExpanded,
+    required this.expandProperties,
   });
 
   @override
@@ -33,15 +38,6 @@ class AnimatedPlanListItem extends StatefulWidget {
 }
 
 class _AnimatedPlanListItemState extends State<AnimatedPlanListItem> {
-  bool _propertiesExpanded = false;
-
-  // show / hide properties
-  void _switchPropertiesPanel() {
-    setState(() {
-      _propertiesExpanded = !_propertiesExpanded;
-    });
-  }
-
   // show deletion popup and remove workout plan if submitted
   void _deletePlan() {
     showDialog(
@@ -189,7 +185,7 @@ class _AnimatedPlanListItemState extends State<AnimatedPlanListItem> {
 
                 // MENU BUTTON
                 IconButton(
-                  onPressed: _switchPropertiesPanel,
+                  onPressed: () => widget.expandProperties(widget.index),
                   icon: const Icon(Icons.more_horiz),
                 ),
               ],
@@ -223,7 +219,7 @@ class _AnimatedPlanListItemState extends State<AnimatedPlanListItem> {
             ),
 
             // EXPANDED ACTIONS
-            if (_propertiesExpanded)
+            if (widget.propertiesExpanded)
               Row(
                 spacing: 10,
                 children: [

@@ -18,6 +18,16 @@ class PlansTab extends StatefulWidget {
 }
 
 class _PlansTabState extends State<PlansTab> {
+  int _expandedIndex = -1;
+
+  void _expandProperties(int index) {
+    if (_expandedIndex == index) {
+      setState(() => _expandedIndex = -1);
+    } else {
+      setState(() => _expandedIndex = index);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
@@ -92,6 +102,8 @@ class _PlansTabState extends State<PlansTab> {
                     appData: widget.appData,
                     settings: widget.settings,
                     index: index,
+                    expandProperties: _expandProperties,
+                    propertiesExpanded: _expandedIndex == index,
                   );
                 },
               ),
