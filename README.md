@@ -72,19 +72,6 @@ The main focus of the project is:
 * Smooth navigation and animations.
 * Modular and maintainable application structure.
 
-## Future Improvements
-
-Possible future improvements include:
-
-* Cloud synchronization.
-* User accounts and authentication.
-* Achievements and badges.
-* More detailed progress charts.
-* Workout reminders and notifications.
-* Predefined workout plans.
-* Exporting workout history.
-* Backup and restoration of user data.
-
 ## Screenshots
 <p align="center">
   <img width="250" src="https://github.com/user-attachments/assets/48b1d987-12f7-4e82-89af-fe98d1ac8792" />
