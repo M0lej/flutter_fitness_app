@@ -101,3 +101,9 @@ Possible future improvements include:
 ## License
 
 This project was created for educational purposes and as part of a personal portfolio.
+
+## Credits
+
+This project uses exercise data from [Free Exercise DB](https://github.com/yuhonas/free-exercise-db), an open-source exercise database created by Yuhonas.
+
+Many thanks to the contributors for providing and maintaining this resource.
