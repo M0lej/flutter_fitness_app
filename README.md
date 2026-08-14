@@ -26,10 +26,8 @@ A modern fitness tracking application built with **Flutter**. The app is designe
 
 The application provides statistics that allow users to track their training activity, including:
 
-* Number of completed exercises.
 * Number of completed workouts.
 * Comparison between the current and previous month.
-* Progress and changes in workout activity over time.
 
 ### Custom Exercises
 
