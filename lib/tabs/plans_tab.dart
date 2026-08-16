@@ -6,7 +6,7 @@ import 'package:gym_app/tabs/plan_creator_tab.dart';
 import 'package:gym_app/utils/active_workout_card.dart';
 import 'package:gym_app/utils/appBars/my_app_bar.dart';
 import 'package:gym_app/utils/my_divider.dart';
-import 'package:gym_app/utils/animated_plan_list_item.dart';
+import 'package:gym_app/utils/plan_card.dart';
 
 class PlansTab extends StatefulWidget {
   final SettingsProvider settings;
@@ -18,16 +18,6 @@ class PlansTab extends StatefulWidget {
 }
 
 class _PlansTabState extends State<PlansTab> {
-  int _expandedIndex = -1;
-
-  void _expandProperties(int index) {
-    if (_expandedIndex == index) {
-      setState(() => _expandedIndex = -1);
-    } else {
-      setState(() => _expandedIndex = index);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return CustomScrollView(
@@ -47,10 +37,6 @@ class _PlansTabState extends State<PlansTab> {
                 ),
               ),
               icon: const Icon(Icons.add, size: 30),
-              style: ButtonStyle(
-                padding: WidgetStateProperty.all(EdgeInsets.all(0)),
-                backgroundColor: WidgetStateProperty.all(Colors.red),
-              ),
             ),
           ],
         ),
@@ -97,13 +83,11 @@ class _PlansTabState extends State<PlansTab> {
                 itemBuilder: (context, index) {
                   Plan currentPlan = widget.appData.plans[index];
 
-                  return AnimatedPlanListItem(
+                  return PlanCard(
                     plan: currentPlan,
                     appData: widget.appData,
                     settings: widget.settings,
                     index: index,
-                    expandProperties: _expandProperties,
-                    propertiesExpanded: _expandedIndex == index,
                   );
                 },
               ),

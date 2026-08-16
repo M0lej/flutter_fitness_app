@@ -17,13 +17,13 @@ const Map<String, Widget> icons = {
 @HiveType(typeId: 2)
 class Plan {
   @HiveField(0)
-  final String name;
+  String name;
 
   @HiveField(2)
-  final List<Exercise> exercises;
+  List<Exercise> exercises;
 
   @HiveField(3)
-  final DateTime creationDate;
+  DateTime creationDate;
 
   @HiveField(4)
   String iconName;
@@ -61,37 +61,6 @@ class Plan {
       if (other.exercises.indexWhere((Exercise e) => e.id == exercise.id) ==
           -1) {
         return true;
-      }
-
-      Exercise otherExercise = other.exercises.firstWhere(
-        (Exercise e) => e.id == exercise.id,
-      );
-
-      if (otherExercise.workoutSets.length != exercise.workoutSets.length) {
-        return true;
-      }
-
-      if (otherExercise.weightUnit != exercise.weightUnit) {
-        return true;
-      }
-
-      for (WorkoutSet workoutSet in exercise.workoutSets) {
-        if (otherExercise.workoutSets.indexWhere(
-              (WorkoutSet s) =>
-                  s.reps == workoutSet.reps && s.weight == workoutSet.weight,
-            ) ==
-            -1) {
-          return true;
-        }
-
-        // if (otherExercise.workoutSets.indexWhere(
-        //       (WorkoutSet s) => s.id == workoutSet.id,
-        //     ) !=
-        //     exercise.workoutSets.indexOf(workoutSet)) {
-        //   print('4');
-
-        //   return true;
-        // }
       }
     }
 

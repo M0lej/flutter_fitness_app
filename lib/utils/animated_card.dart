@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:gym_app/config.dart';
 
@@ -6,12 +7,17 @@ class AnimatedCard extends StatefulWidget {
   final int index;
   final Color? color;
   final bool? indexDelayedAnimation;
+  final GestureLongPressCallback? onLongPress;
+  final GestureTapCallback? onTap;
+
   const AnimatedCard({
     super.key,
     this.child,
     required this.index,
     this.color,
     this.indexDelayedAnimation = true,
+    this.onLongPress,
+    this.onTap,
   });
 
   @override
@@ -19,7 +25,8 @@ class AnimatedCard extends StatefulWidget {
 }
 
 class _AnimatedCardState extends State<AnimatedCard> {
-  bool _animate = false;
+  double _opacity = 0;
+  double _scale = 0;
 
   @override
   void initState() {
@@ -28,22 +35,49 @@ class _AnimatedCardState extends State<AnimatedCard> {
     int delay = widget.indexDelayedAnimation! ? widget.index * 100 : 100;
     Future.delayed(Duration(milliseconds: delay), () {
       if (mounted) {
-        setState(() => _animate = true);
+        setState(() {
+          _scale = 1;
+          _opacity = 1;
+        });
       }
+    });
+  }
+
+  void _onLongPressDown(LongPressDownDetails _) {
+    if (widget.onLongPress == null) return;
+
+    setState(() {
+      _opacity = .2;
+      _scale = .9;
+    });
+  }
+
+  void _onLongPressCancel() {
+    if (widget.onLongPress == null) return;
+
+    setState(() {
+      _opacity = 1;
+      _scale = 1;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedOpacity(
-      opacity: _animate ? 1 : 0,
-      duration: animationsDuration,
-      curve: Curves.ease,
-      child: AnimatedScale(
-        scale: _animate ? 1 : 0,
+    return GestureDetector(
+      onLongPressDown: _onLongPressDown,
+      onLongPressCancel: _onLongPressCancel,
+      onLongPress: widget.onLongPress,
+      onTap: widget.onTap,
+      child: AnimatedOpacity(
+        opacity: _opacity,
         duration: animationsDuration,
         curve: Curves.ease,
-        child: Card(color: widget.color, child: widget.child),
+        child: AnimatedScale(
+          scale: _scale,
+          duration: animationsDuration,
+          curve: Curves.ease,
+          child: Card(color: widget.color, child: widget.child),
+        ),
       ),
     );
   }

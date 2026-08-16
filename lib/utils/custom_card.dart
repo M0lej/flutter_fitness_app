@@ -7,6 +7,7 @@ class CustomCard extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final Color? color;
   final int index;
+  final GestureLongPressCallback? onLongPress;
 
   const CustomCard({
     super.key,
@@ -14,7 +15,8 @@ class CustomCard extends StatelessWidget {
     required this.children,
     this.padding,
     this.color,
-    required this.index
+    this.onLongPress,
+    required this.index,
   });
 
   @override
@@ -22,6 +24,7 @@ class CustomCard extends StatelessWidget {
     return AnimatedCard(
       index: index,
       color: color,
+      onLongPress: onLongPress,
       child: Padding(
         padding: padding ?? EdgeInsetsGeometry.all(15),
         child: Column(

@@ -11,10 +11,13 @@ import 'package:provider/provider.dart';
 class ExerciseCreatorTab extends StatefulWidget {
   final SettingsProvider settings;
   final DataProvider appData;
+  final Function refreshCustomExercises;
+
   const ExerciseCreatorTab({
     super.key,
     required this.settings,
     required this.appData,
+    required this.refreshCustomExercises,
   });
 
   @override
@@ -41,6 +44,7 @@ class _ExerciseCreatorTabState extends State<ExerciseCreatorTab> {
       _primaryMuscles.toList(),
       _secondaryMuscles.toList(),
     );
+    widget.refreshCustomExercises();
     Navigator.pop(context);
   }
 
@@ -81,14 +85,10 @@ class _ExerciseCreatorTabState extends State<ExerciseCreatorTab> {
               IconButton(
                 icon: const Icon(Icons.check, size: 30),
                 onPressed: _addExercise,
-                style: ButtonStyle(
-                  padding: WidgetStateProperty.all(const EdgeInsets.all(0)),
-                  backgroundColor: WidgetStateProperty.all(Colors.red),
-                ),
               ),
             ],
             leading: IconButton(
-              onPressed: () => closeWithoutSaving(context),
+              onPressed: () => closeWithoutSaving(appContext: context),
               icon: const Icon(Icons.arrow_back),
             ),
           ),

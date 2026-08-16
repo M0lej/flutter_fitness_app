@@ -8,7 +8,7 @@ import 'package:gym_app/tabs/exercise_preview_tab.dart';
 import 'package:gym_app/tabs/exercise_search_tab.dart';
 import 'package:gym_app/themes/app_theme.dart';
 import 'package:gym_app/utils/appBars/my_app_bar.dart';
-import 'package:gym_app/utils/exercise_card.dart';
+import 'package:gym_app/utils/exercise_card/exercise_card.dart';
 import 'package:gym_app/utils/my_alert_dialog.dart';
 import 'package:gym_app/utils/my_divider.dart';
 import 'package:gym_app/utils/my_icon.dart';
@@ -211,14 +211,10 @@ class _PlanCreatorTabState extends State<PlanCreatorTab> {
                     ? _editPlan(context)
                     : _addPlan(context),
                 icon: const Icon(Icons.check, size: 30),
-                style: const ButtonStyle(
-                  padding: WidgetStatePropertyAll(EdgeInsets.all(0)),
-                  backgroundColor: WidgetStatePropertyAll(Colors.red),
-                ),
               ),
             ],
             leading: IconButton(
-              onPressed: () => closeWithoutSaving(context),
+              onPressed: () => closeWithoutSaving(appContext: context),
               icon: const Icon(Icons.arrow_back),
             ),
           ),
@@ -295,6 +291,7 @@ class _PlanCreatorTabState extends State<PlanCreatorTab> {
                       isFirst: index == 0,
                       isLast: index == _exercises.length - 1,
                       changeOrder: _changeExerciseOrder,
+                      translations: widget.settings.translations,
                     ),
                   ),
                 ),

@@ -18,9 +18,9 @@ class MonthStatsAdapter extends TypeAdapter<MonthStats> {
     };
     return MonthStats(
       completedWorkoutsCount: fields[0] as int,
-      exercisesStats: (fields[1] as List).cast<ExerciseStats>(),
       score: fields[2] as int,
       date: fields[3] as DateTime,
+      currentMonthWorkoutLogs: (fields[1] as List).cast<WorkoutLog>(),
     );
   }
 
@@ -31,7 +31,7 @@ class MonthStatsAdapter extends TypeAdapter<MonthStats> {
       ..writeByte(0)
       ..write(obj.completedWorkoutsCount)
       ..writeByte(1)
-      ..write(obj.exercisesStats)
+      ..write(obj.currentMonthWorkoutLogs)
       ..writeByte(2)
       ..write(obj.score)
       ..writeByte(3)

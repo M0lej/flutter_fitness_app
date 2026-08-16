@@ -7,7 +7,7 @@ import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/tabs/exercise_tab.dart';
 import 'package:gym_app/themes/app_theme.dart';
 import 'package:gym_app/utils/appBars/my_app_bar.dart';
-import 'package:gym_app/utils/exercise_card.dart';
+import 'package:gym_app/utils/exercise_card/exercise_card.dart';
 import 'package:gym_app/utils/my_alert_dialog.dart';
 import 'package:gym_app/utils/my_divider.dart';
 import 'package:gym_app/utils/workout_clock.dart';
@@ -33,6 +33,7 @@ class WorkoutTab extends StatefulWidget {
 
 class _WorkoutTabState extends State<WorkoutTab> {
   late Plan _copiedPlan;
+  final List<String> _completedExercisesIds = [];
 
   @override
   void initState() {
@@ -73,62 +74,48 @@ class _WorkoutTabState extends State<WorkoutTab> {
     setState(() {});
   }
 
-  void _showFinishWorkoutPopup(BuildContext appContext) {
-    showDialog(
-      context: context,
-      builder: (context) => MyAlertDialog(
-        title: widget.logToEdit != null
-            ? widget.settings.translations.areYouSureWantToUpdateThisWorkout
-            : widget.settings.translations.areYouSureYouWantToEnd,
-        description: "",
-        buttons: [
-          TextButton.icon(
-            onPressed: () {
-              Navigator.pop(context);
+  void _finishWorkout() {
+    if (_completedExercisesIds.length != _copiedPlan.exercises.length &&
+        widget.logToEdit == null) {
+      showYesNoDialog(
+        title: widget.settings.translations.youHaveNotCompletedAllYourExercises,
+        onYes: () => _showFinishWorkoutPopup(),
+        appContext: context,
+        translations: widget.settings.translations,
+      );
+    } else {
+      _showFinishWorkoutPopup();
+    }
+  }
 
-              switch (widget.logToEdit == null) {
-                case true:
-                  _logWorkout();
-                  break;
-                case false:
-                  _updateWorkout();
-                  break;
-              }
+  void _showFinishWorkoutPopup() {
+    showYesNoDialog(
+      title: widget.logToEdit != null
+          ? widget.settings.translations.areYouSureWantToUpdateThisWorkout
+          : widget.settings.translations.areYouSureYouWantToEnd,
+      onYes: () {
+        switch (widget.logToEdit == null) {
+          case true:
+            _logWorkout();
+            break;
+          case false:
+            _updateWorkout();
+            break;
+        }
 
-              if (widget.plan.isDifferent(_copiedPlan)) {
-                _showUpdatePlanPopup();
-              } else {
-                Navigator.pop(appContext);
-              }
-            },
-            label: Text(
-              widget.settings.translations.yes,
-              style: TextStyle(color: Theme.of(context).colorScheme.primary),
-            ),
-            icon: const Icon(Icons.check, color: Colors.white),
-          ),
-          TextButton.icon(
-            onPressed: () => Navigator.pop(context),
-            label: Text(
-              widget.settings.translations.no,
-              style: TextStyle(color: Theme.of(context).colorScheme.primary),
-            ),
-            icon: const Icon(Icons.close, color: Colors.white),
-            style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all(
-                Theme.of(context).cardTheme.color,
-              ),
-              side: WidgetStateProperty.all(
-                BorderSide(color: AppTheme.borderColor),
-              ),
-            ),
-          ),
-        ],
-      ),
+        if (widget.plan.isDifferent(_copiedPlan)) {
+          _showUpdatePlanPopup();
+        } else {
+          Navigator.pop(context);
+        }
+      },
+      appContext: context,
+      translations: widget.settings.translations,
     );
   }
 
   void _logWorkout() {
+    widget.appData.updateActiveWorkout(_copiedPlan);
     widget.appData.addLog(_copiedPlan);
   }
 
@@ -236,6 +223,14 @@ class _WorkoutTabState extends State<WorkoutTab> {
     );
   }
 
+  void _completeExercise(String exerciseId) {
+    if (_completedExercisesIds.contains(exerciseId)) return;
+
+    setState(() {
+      _completedExercisesIds.add(exerciseId);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -254,18 +249,10 @@ class _WorkoutTabState extends State<WorkoutTab> {
                 IconButton(
                   onPressed: () => _showLogDeletionPopup(),
                   icon: const Icon(Icons.delete_forever, size: 25),
-                  style: ButtonStyle(
-                    padding: WidgetStateProperty.all(EdgeInsets.all(0)),
-                    backgroundColor: WidgetStateProperty.all(Colors.red),
-                  ),
                 ),
               IconButton(
-                onPressed: () => _showFinishWorkoutPopup(context),
+                onPressed: () => _finishWorkout(),
                 icon: const Icon(Icons.check, size: 30),
-                style: ButtonStyle(
-                  padding: WidgetStateProperty.all(EdgeInsets.all(0)),
-                  backgroundColor: WidgetStateProperty.all(Colors.red),
-                ),
               ),
             ],
           ),
@@ -315,6 +302,11 @@ class _WorkoutTabState extends State<WorkoutTab> {
                             refreshWorkoutTabWidget: _refreshWorkoutTabWidget,
                             settings: widget.settings,
                             appData: widget.appData,
+                            completeExercise: _completeExercise,
+                            isCompleted: _completedExercisesIds.contains(
+                              exercise.id,
+                            ),
+                            editMode: widget.logToEdit != null,
                           ),
                         ),
                       ),
@@ -325,6 +317,10 @@ class _WorkoutTabState extends State<WorkoutTab> {
                         isFirst: index == 0,
                         isLast: index == _copiedPlan.exercises.length - 1,
                         showSets: true,
+                        isCompleted: _completedExercisesIds.contains(
+                          exercise.id,
+                        ),
+                        translations: widget.settings.translations,
                       ),
                     );
                   },

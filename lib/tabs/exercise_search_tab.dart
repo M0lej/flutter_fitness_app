@@ -1,16 +1,14 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:gym_app/data/data_provider.dart';
 import 'package:gym_app/data/exercises.dart';
 import 'package:gym_app/hive/exercise.dart';
 import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/tabs/exercise_creator_tab.dart';
-import 'package:gym_app/utils/animated_card.dart';
 import 'package:gym_app/utils/appBars/my_app_bar.dart';
 import 'package:gym_app/utils/exercise_info_card.dart';
 import 'package:gym_app/utils/exercise_search_tab/exercise_search_tab_switch_button.dart';
 import 'package:gym_app/utils/my_divider.dart';
-import 'package:gym_app/utils/my_image.dart';
+import 'package:provider/provider.dart';
 
 enum ExercisesSource { library, custom }
 
@@ -122,9 +120,18 @@ class _ExerciseSearchTabState extends State<ExerciseSearchTab> {
         builder: (context) => ExerciseCreatorTab(
           appData: widget.appData,
           settings: widget.settings,
+          refreshCustomExercises: _refreshCustomExercises,
         ),
       ),
     );
+  }
+
+  void _refreshCustomExercises() {
+    if (_exercisesSource == ExercisesSource.custom) {
+      setState(() {
+        _exercises = context.read<DataProvider>().customExercises;
+      });
+    }
   }
 
   @override
@@ -138,10 +145,6 @@ class _ExerciseSearchTabState extends State<ExerciseSearchTab> {
             IconButton(
               onPressed: _addExercise,
               icon: const Icon(Icons.add, size: 30),
-              style: ButtonStyle(
-                padding: WidgetStateProperty.all(const EdgeInsets.all(0)),
-                backgroundColor: WidgetStateProperty.all(Colors.red),
-              ),
             ),
           ],
           leading: IconButton(
@@ -221,6 +224,9 @@ class _ExerciseSearchTabState extends State<ExerciseSearchTab> {
                 exercise: exercise,
                 addExercise: widget.addExercise,
                 settings: widget.settings,
+                appData: widget.appData,
+                refreshCustomExercises: _refreshCustomExercises,
+                canBeDeleted: _exercisesSource == ExercisesSource.custom,
               );
             },
           ),

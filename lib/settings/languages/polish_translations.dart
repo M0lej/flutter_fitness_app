@@ -119,7 +119,21 @@ class PolishTranslations extends Translations {
       "Czy na pewno chcesz usunąć ten zapis treningu?";
 
   @override
+  String get areYouSureYouWantToDeleteExercise =>
+      "Czy na pewno chcesz usunąć te ćwiczenie?";
+
+  @override
   String get thisActionCannotBeUndone => "Tej czynności nie da się odwrócić!";
+
+  @override
+  String get youHaveNotCompletedAllYourExercises =>
+      "Nie wykonałeś wszystkich zaplanowanych ćwiczeń. Czy nadal chcesz kontynuować?";
+
+  @override
+  String get removeExercise => "Czy chcesz usunąć to ćwiczenie?";
+
+  @override
+  String get removeSet => "Czy chcesz usunąć tą serie?";
 
   @override
   String get delete => "Usuń";
@@ -131,6 +145,9 @@ class PolishTranslations extends Translations {
   String get cancel => "Anuluj";
 
   @override
+  String get complete => "Ukończ";
+
+  @override
   String get weightUnit => "Jednostka wagi";
 
   @override
@@ -138,6 +155,9 @@ class PolishTranslations extends Translations {
 
   @override
   String get weight => "Ciężar";
+
+  @override
+  String get last => "Poprzednio";
 
   @override
   String get areSureYouWantToExitWithoutSaving =>

@@ -9,17 +9,22 @@ import 'package:gym_app/hive/workout_set.dart';
 import 'package:gym_app/hive/weight_unit.dart';
 import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/utils/appBars/my_app_bar.dart';
+import 'package:gym_app/utils/category_expand_button.dart';
 import 'package:gym_app/utils/my_divider.dart';
-import 'package:gym_app/utils/workout_set_item.dart';
+import 'package:gym_app/utils/workout_set_item/workout_set_item.dart';
 import 'package:uuid/uuid.dart';
 
 class ExerciseTab extends StatefulWidget {
   final SettingsProvider settings;
   final DataProvider appData;
   final bool viewMode;
+  final bool editMode;
 
   final Exercise exercise;
   final Function refreshWorkoutTabWidget;
+  final Function(String)? completeExercise;
+  final bool? isCompleted;
+
   const ExerciseTab({
     super.key,
     required this.exercise,
@@ -27,6 +32,9 @@ class ExerciseTab extends StatefulWidget {
     required this.appData,
     required this.settings,
     this.viewMode = false,
+    this.editMode = false,
+    this.completeExercise,
+    this.isCompleted = false,
   });
 
   @override
@@ -121,20 +129,11 @@ class _ExerciseTabState extends State<ExerciseTab> {
     setState(() {});
   }
 
-  void _removeSet(WorkoutSet workoutSet) {
-    final setIndex = widget.exercise.workoutSets.indexWhere(
-      (WorkoutSet s) => s.id == workoutSet.id,
-    );
+  void _removeSet(int index) {
+    _weightControllers[index].dispose();
+    _weightControllers.removeAt(index);
 
-    if (setIndex >= 0) {
-      _weightControllers[setIndex].dispose();
-      _weightControllers.removeAt(setIndex);
-    }
-
-    widget.exercise.workoutSets = widget.exercise.workoutSets
-        .where((WorkoutSet s) => s.id != workoutSet.id)
-        .toList();
-
+    widget.exercise.workoutSets.removeAt(index);
     widget.refreshWorkoutTabWidget();
     setState(() {});
   }
@@ -151,10 +150,6 @@ class _ExerciseTabState extends State<ExerciseTab> {
             IconButton(
               onPressed: _addWorkoutSet,
               icon: const Icon(Icons.add, size: 30),
-              style: ButtonStyle(
-                padding: WidgetStateProperty.all(EdgeInsets.all(0)),
-                backgroundColor: WidgetStateProperty.all(Colors.red),
-              ),
             ),
           ],
         ),
@@ -172,18 +167,15 @@ class _ExerciseTabState extends State<ExerciseTab> {
               MyDivider(),
 
               if (widget.exercise.instructions != null)
-                Text(
-                  widget.settings.translations.instructions,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
+                CategoryExpandButton(
+                  label: Text(
+                    widget.settings.translations.instructions,
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   ),
-                ),
-
-              if (widget.exercise.instructions != null)
-                AutoSizeText(
-                  widget.exercise.instructions?.join('\n') ?? '',
-                  style: const TextStyle(fontSize: 13),
+                  child: AutoSizeText(
+                    widget.exercise.instructions?.join('\n') ?? '',
+                    style: const TextStyle(fontSize: 13),
+                  ),
                 ),
 
               Row(
@@ -214,13 +206,34 @@ class _ExerciseTabState extends State<ExerciseTab> {
                   index: index,
                   onRepCountChange: _onRepCountChange,
                   onWeightChange: _onWeightChange,
-                  settings: widget.settings,
+                  translations: widget.settings.translations,
                   weightController: _weightControllers[index],
                   removeSet: _removeSet,
+                  appData: widget.appData,
+                  editMode: widget.editMode,
                 ),
                 itemCount: widget.exercise.workoutSets.length,
                 separatorBuilder: (context, index) => const MyDivider(),
               ),
+
+              const MyDivider(),
+
+              if (!widget.viewMode &&
+                  !widget.editMode &&
+                  !(widget.isCompleted ?? true))
+                TextButton.icon(
+                  onPressed: () {
+                    widget.completeExercise?.call(widget.exercise.id);
+                    Navigator.pop(context);
+                  },
+                  label: Text(
+                    widget.settings.translations.complete,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
             ],
           ),
         ),

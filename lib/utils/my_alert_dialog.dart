@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gym_app/data/data_provider.dart';
+import 'package:gym_app/settings/languages/translations.dart';
 import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/themes/app_theme.dart';
 import 'package:provider/provider.dart';
@@ -44,7 +44,7 @@ class MyAlertDialog extends StatelessWidget {
   }
 }
 
-void closeWithoutSaving(BuildContext appContext) {
+void closeWithoutSaving({required BuildContext appContext, Function? onYes}) {
   showDialog(
     context: appContext,
     builder: (context) => Consumer<SettingsProvider>(
@@ -56,7 +56,7 @@ void closeWithoutSaving(BuildContext appContext) {
             onPressed: () {
               Navigator.pop(context);
               Navigator.pop(appContext);
-              context.read<DataProvider>().removeActiveWorkout();
+              onYes?.call();
             },
             label: Text(
               settingsModelValues.translations.yes,
@@ -82,6 +82,50 @@ void closeWithoutSaving(BuildContext appContext) {
           ),
         ],
       ),
+    ),
+  );
+}
+
+void showYesNoDialog({
+  required String title,
+  String? description,
+  required Function onYes,
+  required BuildContext appContext,
+  required Translations translations,
+}) {
+  showDialog(
+    context: appContext,
+    builder: (context) => MyAlertDialog(
+      title: title,
+      buttons: [
+        TextButton.icon(
+          onPressed: () {
+            Navigator.pop(context);
+            onYes();
+          },
+          label: Text(
+            translations.yes,
+            style: TextStyle(color: Theme.of(context).colorScheme.primary),
+          ),
+          icon: const Icon(Icons.check, color: Colors.white),
+        ),
+        TextButton.icon(
+          onPressed: () => Navigator.pop(context),
+          label: Text(
+            translations.no,
+            style: TextStyle(color: Theme.of(context).colorScheme.primary),
+          ),
+          icon: const Icon(Icons.close, color: Colors.white),
+          style: ButtonStyle(
+            backgroundColor: WidgetStateProperty.all(
+              Theme.of(context).cardTheme.color,
+            ),
+            side: WidgetStateProperty.all(
+              BorderSide(color: AppTheme.borderColor),
+            ),
+          ),
+        ),
+      ],
     ),
   );
 }

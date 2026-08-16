@@ -6,6 +6,7 @@ import 'package:gym_app/hive/month_stats.dart';
 import 'package:gym_app/hive/plan.dart';
 import 'package:gym_app/hive/weight_unit.dart';
 import 'package:gym_app/hive/workout_log.dart';
+import 'package:gym_app/hive/workout_set.dart';
 import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 import 'package:collection/collection.dart';
@@ -38,6 +39,9 @@ class DataProvider extends ChangeNotifier {
 
   // get completed workouts count
   int get completedWorkoutsCount => _data.completedWorkoutsCount;
+
+  // get exercises stats
+  List<ExerciseStats> get exercisesStats => _data.exercisesStats;
 
   Future<void> _save() async {
     await _box.put('data', _data);
@@ -76,6 +80,7 @@ class DataProvider extends ChangeNotifier {
     await _save();
   }
 
+  // run after finished workout
   // create new data model with updated list of workout logs and notify listeners
   // also clears old logs
   Future<void> addLog(Plan plan) async {
@@ -85,12 +90,12 @@ class DataProvider extends ChangeNotifier {
 
     List<WorkoutLog> modifiedWorkoutLogs = workoutLogs;
 
-    // if there are more that 10 workout logs stored then remove ones that are older than 30 days to save space
+    // if there are more that 10 workout logs stored then remove ones that are older than 62 days to save space
     if (modifiedWorkoutLogs.length >= 10) {
       modifiedWorkoutLogs = modifiedWorkoutLogs
           .where(
             (WorkoutLog workoutLog) =>
-                DateTime.now().difference(workoutLog.end!).inDays >= 30,
+                DateTime.now().difference(workoutLog.end!).inDays >= 62,
           )
           .toList();
     }
@@ -102,7 +107,7 @@ class DataProvider extends ChangeNotifier {
         ) ??
         MonthStats.empty();
 
-    currentMonthStats.update(plan.exercises);
+    currentMonthStats.update(modifiedWorkoutLogs);
 
     _data.workoutLogs = [
       ...modifiedWorkoutLogs,
@@ -118,7 +123,25 @@ class DataProvider extends ChangeNotifier {
     ];
     _data.completedWorkoutsCount += 1;
 
+    updateExercisesStats(plan.exercises);
+
     await _save();
+  }
+
+  void updateExercisesStats(List<Exercise> newCompletedExercises) {
+    for (Exercise newCompletedExercise in newCompletedExercises) {
+      ExerciseStats? exerciseStats = exercisesStats.firstWhereOrNull(
+        (ExerciseStats exerciseStats) =>
+            exerciseStats.exerciseId == newCompletedExercise.id,
+      );
+
+      // if there is already a exercise stats class with the same exercise id as the one completed on the newest workout remove then remove it ( it will be replaced with newest data )
+      if (exerciseStats != null) {
+        _data.exercisesStats.remove(exerciseStats);
+      }
+
+      _data.exercisesStats.add(ExerciseStats.create(newCompletedExercise));
+    }
   }
 
   // update existing workout log
@@ -139,6 +162,7 @@ class DataProvider extends ChangeNotifier {
 
     _data.workoutLogs = changedLogs;
     _data.monthsStats = getUpdatedMonthsStatsList(workoutLog);
+    updateExercisesStats(workoutLog.plan.exercises);
 
     await _save();
   }
@@ -223,6 +247,13 @@ class DataProvider extends ChangeNotifier {
     await _save();
   }
 
+  // remove exercise
+  Future<void> removeExercise(Exercise exercise) async {
+    _data.customExercises.removeWhere((Exercise e) => e.id == exercise.id);
+
+    await _save();
+  }
+
   List<MonthStats> getUpdatedMonthsStatsList(WorkoutLog workoutLog) {
     MonthStats monthStats =
         monthsStats.firstWhereOrNull(
@@ -235,7 +266,7 @@ class DataProvider extends ChangeNotifier {
         .where((MonthStats m) => m != monthStats)
         .toList();
 
-    monthStats.update(workoutLog.plan.exercises);
+    monthStats.update(workoutLogs);
 
     return updatedMonthsStats;
   }
@@ -293,4 +324,9 @@ class DataProvider extends ChangeNotifier {
     }
     return notRealizedPlansThisWeek.first;
   }
+
+  ExerciseStats? getExerciseStatsWithId(String exerciseId) =>
+      exercisesStats.firstWhereOrNull(
+        (ExerciseStats exerciseStats) => exerciseStats.exerciseId == exerciseId,
+      );
 }

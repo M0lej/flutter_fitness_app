@@ -6,13 +6,11 @@ import 'package:gym_app/hive/workout_log.dart';
 import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/tabs/plan_creator_tab.dart';
 import 'package:gym_app/tabs/workout_tab.dart';
-import 'package:gym_app/themes/app_theme.dart';
 import 'package:gym_app/utils/animated_card.dart';
 import 'package:gym_app/utils/my_alert_dialog.dart';
 import 'package:gym_app/utils/my_icon.dart';
-import 'package:provider/provider.dart';
 
-class AnimatedPlanListItem extends StatefulWidget {
+class PlanCard extends StatefulWidget {
   final DataProvider appData;
   final SettingsProvider settings;
 
@@ -20,63 +18,29 @@ class AnimatedPlanListItem extends StatefulWidget {
 
   final int index;
 
-  final bool propertiesExpanded;
-  final Function(int) expandProperties;
-
-  const AnimatedPlanListItem({
+  const PlanCard({
     super.key,
     required this.plan,
     required this.appData,
     required this.settings,
     required this.index,
-    required this.propertiesExpanded,
-    required this.expandProperties,
   });
 
   @override
-  State<AnimatedPlanListItem> createState() => _AnimatedPlanListItemState();
+  State<PlanCard> createState() => _PlanCardState();
 }
 
-class _AnimatedPlanListItemState extends State<AnimatedPlanListItem> {
+class _PlanCardState extends State<PlanCard> {
   // show deletion popup and remove workout plan if submitted
   void _deletePlan() {
-    showDialog(
-      context: context,
-      builder: (context) => MyAlertDialog(
-        title:
-            '${widget.settings.translations.areYouSureYouWantToDeletePlan} "${widget.plan.name}" ?',
-        description:
-            '\n\n${widget.settings.translations.thisActionCannotBeUndone}',
-        buttons: [
-          TextButton.icon(
-            onPressed: () {
-              widget.appData.removePlan(widget.plan);
-              Navigator.pop(context);
-            },
-            label: Text(
-              widget.settings.translations.delete,
-              style: TextStyle(color: Theme.of(context).colorScheme.primary),
-            ),
-            icon: const Icon(Icons.delete_forever, color: Colors.white),
-          ),
-          TextButton.icon(
-            onPressed: () => Navigator.pop(context),
-            label: Text(
-              widget.settings.translations.cancel,
-              style: TextStyle(color: Theme.of(context).colorScheme.primary),
-            ),
-            icon: const Icon(Icons.cancel, color: Colors.white),
-            style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all(
-                Theme.of(context).cardTheme.color,
-              ),
-              side: WidgetStateProperty.all(
-                const BorderSide(color: AppTheme.borderColor),
-              ),
-            ),
-          ),
-        ],
-      ),
+    showYesNoDialog(
+      title:
+          '${widget.settings.translations.areYouSureYouWantToDeletePlan} "${widget.plan.name}" ?',
+      description:
+          '\n\n${widget.settings.translations.thisActionCannotBeUndone}',
+      onYes: () => widget.appData.removePlan(widget.plan),
+      appContext: context,
+      translations: widget.settings.translations,
     );
   }
 
@@ -96,7 +60,7 @@ class _AnimatedPlanListItemState extends State<AnimatedPlanListItem> {
 
   // if there isn't an active workout then start a new one and navigate to workout tab
   void _goToWorkoutTab() {
-    WorkoutLog? activeWorkout = context.read<DataProvider>().activeWorkout;
+    WorkoutLog? activeWorkout = widget.appData.activeWorkout;
 
     if (activeWorkout != null) {
       showDialog(
@@ -120,7 +84,7 @@ class _AnimatedPlanListItemState extends State<AnimatedPlanListItem> {
       return;
     }
 
-    context.read<DataProvider>().addActiveWorkout(widget.plan);
+    widget.appData.addActiveWorkout(widget.plan);
 
     Navigator.push(
       context,
@@ -138,6 +102,8 @@ class _AnimatedPlanListItemState extends State<AnimatedPlanListItem> {
   Widget build(BuildContext context) {
     return AnimatedCard(
       index: widget.index,
+      onLongPress: () => _deletePlan(),
+      onTap: () => _editPlan(),
       child: Padding(
         padding: const EdgeInsets.all(15),
         child: Column(
@@ -182,12 +148,6 @@ class _AnimatedPlanListItemState extends State<AnimatedPlanListItem> {
                   onPressed: _goToWorkoutTab,
                   icon: const Icon(Icons.play_arrow),
                 ),
-
-                // MENU BUTTON
-                IconButton(
-                  onPressed: () => widget.expandProperties(widget.index),
-                  icon: const Icon(Icons.more_horiz),
-                ),
               ],
             ),
 
@@ -217,46 +177,6 @@ class _AnimatedPlanListItemState extends State<AnimatedPlanListItem> {
                 ),
               ],
             ),
-
-            // EXPANDED ACTIONS
-            if (widget.propertiesExpanded)
-              Row(
-                spacing: 10,
-                children: [
-                  TextButton.icon(
-                    onPressed: _deletePlan,
-                    icon: const Icon(Icons.delete_forever, color: Colors.white),
-                    label: Text(
-                      widget.settings.translations.delete,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                  ),
-
-                  TextButton.icon(
-                    onPressed: _editPlan,
-                    icon: Icon(
-                      Icons.edit,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    label: Text(
-                      widget.settings.translations.edit,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(
-                        Theme.of(context).cardTheme.color,
-                      ),
-                      side: WidgetStateProperty.all(
-                        BorderSide(color: AppTheme.borderColor),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
           ],
         ),
       ),

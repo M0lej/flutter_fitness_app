@@ -92,6 +92,13 @@ class AppTheme {
     appBarTheme: AppBarTheme(
       backgroundColor: backgroundBlack,
       scrolledUnderElevation: 0,
+      actionsIconTheme: IconThemeData(color: red),
+    ),
+
+    iconButtonTheme: IconButtonThemeData(
+      style: const ButtonStyle(
+        backgroundColor: WidgetStatePropertyAll(Colors.transparent),
+      ),
     ),
 
     segmentedButtonTheme: SegmentedButtonThemeData(

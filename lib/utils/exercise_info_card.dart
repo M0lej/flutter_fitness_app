@@ -1,22 +1,32 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:gym_app/data/data_provider.dart';
 import 'package:gym_app/hive/exercise.dart';
 import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/tabs/exercise_preview_tab.dart';
+import 'package:gym_app/themes/app_theme.dart';
 import 'package:gym_app/utils/animated_card.dart';
+import 'package:gym_app/utils/my_alert_dialog.dart';
 import 'package:gym_app/utils/my_image.dart';
 
 class ExerciseInfoCard extends StatelessWidget {
   final int index;
   final Exercise exercise;
   final SettingsProvider settings;
+  final DataProvider appData;
   final Function(Exercise) addExercise;
+  final bool canBeDeleted;
+  final Function refreshCustomExercises;
+
   const ExerciseInfoCard({
     super.key,
     required this.index,
     required this.exercise,
     required this.addExercise,
     required this.settings,
+    required this.appData,
+    this.canBeDeleted = false,
+    required this.refreshCustomExercises,
   });
 
   void _navigateToExerciseDescription(BuildContext context) {
@@ -25,6 +35,45 @@ class ExerciseInfoCard extends StatelessWidget {
       MaterialPageRoute(
         builder: (context) =>
             ExercisePreviewTab(exercise: exercise, settings: settings),
+      ),
+    );
+  }
+
+  void _removeExercise(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => MyAlertDialog(
+        title: settings.translations.areYouSureYouWantToDeleteExercise,
+        buttons: [
+          TextButton.icon(
+            onPressed: () {
+              appData.removeExercise(exercise);
+              refreshCustomExercises();
+              Navigator.pop(context);
+            },
+            label: Text(
+              settings.translations.yes,
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
+            icon: const Icon(Icons.check, color: Colors.white),
+          ),
+          TextButton.icon(
+            onPressed: () => Navigator.pop(context),
+            label: Text(
+              settings.translations.no,
+              style: TextStyle(color: Theme.of(context).colorScheme.primary),
+            ),
+            icon: const Icon(Icons.close, color: Colors.white),
+            style: ButtonStyle(
+              backgroundColor: WidgetStateProperty.all(
+                Theme.of(context).cardTheme.color,
+              ),
+              side: WidgetStateProperty.all(
+                BorderSide(color: AppTheme.borderColor),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -72,6 +121,11 @@ class ExerciseInfoCard extends StatelessWidget {
                   ],
                 ),
               ),
+              if (canBeDeleted)
+                IconButton(
+                  onPressed: () => _removeExercise(context),
+                  icon: const Icon(Icons.delete_forever),
+                ),
               IconButton(
                 onPressed: () => addExercise(exercise),
                 icon: const Icon(Icons.add),

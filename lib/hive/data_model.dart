@@ -1,4 +1,5 @@
 import 'package:gym_app/hive/exercise.dart';
+import 'package:gym_app/hive/exercise_stats.dart';
 import 'package:gym_app/hive/month_stats.dart';
 import 'package:gym_app/hive/plan.dart';
 import 'package:gym_app/hive/workout_log.dart';
@@ -29,6 +30,9 @@ class DataModel {
   @HiveField(5)
   List<MonthStats> monthsStats = [];
 
+  @HiveField(6)
+  List<ExerciseStats> exercisesStats;
+
   DataModel copyWith({
     List<Plan>? plans,
     List<WorkoutLog>? workoutLogs,
@@ -36,6 +40,7 @@ class DataModel {
     List<Exercise>? customExercises,
     List<MonthStats>? monthsStats,
     int? completedWorkoutsCount,
+    List<ExerciseStats>? exercisesStats,
   }) {
     final resolvedActiveWorkout = activeWorkout == _activeWorkoutSentinel
         ? this.activeWorkout
@@ -46,8 +51,9 @@ class DataModel {
       workoutLogs: workoutLogs ?? this.workoutLogs,
       activeWorkout: resolvedActiveWorkout,
       customExercises: customExercises ?? this.customExercises,
-    monthsStats: monthsStats ?? this.monthsStats,
+      monthsStats: monthsStats ?? this.monthsStats,
       completedWorkoutsCount: completedWorkoutsCount ?? 0,
+      exercisesStats: exercisesStats ?? this.exercisesStats,
     );
   }
 
@@ -58,6 +64,7 @@ class DataModel {
     customExercises: [],
     monthsStats: [],
     completedWorkoutsCount: 0,
+    exercisesStats: [],
   );
 
   DataModel({
@@ -67,5 +74,6 @@ class DataModel {
     required this.customExercises,
     required this.monthsStats,
     required this.completedWorkoutsCount,
+    required this.exercisesStats,
   });
 }

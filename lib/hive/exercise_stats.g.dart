@@ -18,18 +18,27 @@ class ExerciseStatsAdapter extends TypeAdapter<ExerciseStats> {
     };
     return ExerciseStats(
       exerciseId: fields[0] as String,
-      maxScore: fields[1] as int,
+      maxReps: fields[2] as int,
+      maxWeight: fields[1] as double,
+      lastWorkoutSets: (fields[3] as List).cast<WorkoutSet>(),
+      weightUnit: fields[4] as WeightUnit,
     );
   }
 
   @override
   void write(BinaryWriter writer, ExerciseStats obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.exerciseId)
       ..writeByte(1)
-      ..write(obj.maxScore);
+      ..write(obj.maxWeight)
+      ..writeByte(2)
+      ..write(obj.maxReps)
+      ..writeByte(3)
+      ..write(obj.lastWorkoutSets)
+      ..writeByte(4)
+      ..write(obj.weightUnit);
   }
 
   @override

@@ -1,5 +1,7 @@
 import 'package:gym_app/hive/exercise.dart';
 import 'package:gym_app/hive/exercise_stats.dart';
+import 'package:gym_app/hive/workout_log.dart';
+import 'package:gym_app/hive/workout_set.dart';
 import 'package:hive_flutter/adapters.dart';
 
 part 'month_stats.g.dart';
@@ -10,7 +12,7 @@ class MonthStats {
   int completedWorkoutsCount = 0;
 
   @HiveField(1)
-  List<ExerciseStats> exercisesStats = [];
+  List<WorkoutLog> currentMonthWorkoutLogs = [];
 
   // score = sum of exercises stats max score
   @HiveField(2)
@@ -21,60 +23,56 @@ class MonthStats {
 
   factory MonthStats.empty() => MonthStats(
     completedWorkoutsCount: 0,
-    exercisesStats: [],
+    currentMonthWorkoutLogs: [],
     score: 0,
     date: DateTime.now(),
   );
 
-  static List<ExerciseStats> _getUpdatedExercisesStats(
-    List<ExerciseStats> exercisesStats,
-    List<Exercise> exercises,
-  ) {
-    // generate stats for submitted exercises
-    List<ExerciseStats> createdExercisesStats = exercises
-        .map((Exercise exercise) => ExerciseStats.get(exercise))
-        .toList();
-
-    // check if there are new exercises with higher score and replace them
-    for (ExerciseStats createdExerciseStats in createdExercisesStats) {
-      int index = exercisesStats.indexWhere(
-        (ExerciseStats oldExerciseStats) =>
-            oldExerciseStats.exerciseId == createdExerciseStats.exerciseId,
-      );
-
-      if (index == -1) {
-        exercisesStats.add(createdExerciseStats);
-        continue;
-      }
-
-      ExerciseStats oldExerciseStats = exercisesStats[index];
-
-      if (createdExerciseStats.maxScore > oldExerciseStats.maxScore) {
-        exercisesStats.remove(oldExerciseStats);
-        exercisesStats.insert(index, createdExerciseStats);
-      }
+  void _updateScore() {
+    if (currentMonthWorkoutLogs.isEmpty) {
+      score = 0;
+      return;
     }
 
-    return exercisesStats;
+    int newScore = currentMonthWorkoutLogs
+        .map((WorkoutLog workoutLog) => _getWorkoutScore(workoutLog))
+        .reduce((a, b) => a + b);
+    score = newScore;
   }
 
-  static int _calculateScore(List<ExerciseStats> exercisesStats) =>
-      exercisesStats.isEmpty
-      ? 0
-      : exercisesStats
-            .map((ExerciseStats exerciseStats) => exerciseStats.maxScore)
-            .reduce((a, b) => a + b);
+  int _getWorkoutScore(WorkoutLog workoutLog) {
+    if (workoutLog.plan.exercises.isEmpty) return 0;
 
-  void update(List<Exercise> exercises) {
-    completedWorkoutsCount += exercises.length;
-    exercisesStats = _getUpdatedExercisesStats(exercisesStats, exercises);
-    score = _calculateScore(exercisesStats);
+    int workoutScore = workoutLog.plan.exercises
+        .map((Exercise exercise) => _getExerciseScore(exercise))
+        .reduce((a, b) => a + b);
+    return workoutScore;
+  }
+
+  int _getExerciseScore(Exercise exercise) {
+    if (exercise.workoutSets.isEmpty) return 0;
+
+    int exerciseScore = exercise.workoutSets
+        .map((WorkoutSet workoutSet) => workoutSet.reps * workoutSet.weight)
+        .reduce((a, b) => a + b)
+        .toInt();
+    return exerciseScore;
+  }
+
+  void update(List<WorkoutLog> workoutLogs) {
+    currentMonthWorkoutLogs = workoutLogs
+        .where(
+          (WorkoutLog workoutLog) =>
+              workoutLog.end!.month == DateTime.now().month,
+        )
+        .toList();
+    _updateScore();
   }
 
   MonthStats({
     required this.completedWorkoutsCount,
-    required this.exercisesStats,
     required this.score,
     required this.date,
+    required this.currentMonthWorkoutLogs,
   });
 }

@@ -116,10 +116,24 @@ class EnglishTranslations extends Translations {
 
   @override
   String get areYouSureYouWantToDeleteLog =>
-      "Are you sure you want to delete thus workout log?";
+      "Are you sure you want to delete this workout log?";
+
+  @override
+  String get areYouSureYouWantToDeleteExercise =>
+      "Are you sure you want to delete this exercise?";
 
   @override
   String get thisActionCannotBeUndone => "This action cannot be undone!";
+
+  @override
+  String get youHaveNotCompletedAllYourExercises =>
+      "You haven't completed all the planned exercises. Do you still want to continue?";
+
+  @override
+  String get removeExercise => "Do you want to remove this exercise?";
+
+  @override
+  String get removeSet => "Do you want to remove this set?";
 
   @override
   String get delete => "Delete";
@@ -131,6 +145,9 @@ class EnglishTranslations extends Translations {
   String get cancel => "Cancel";
 
   @override
+  String get complete => "Complete";
+
+  @override
   String get weightUnit => "Weight unit";
 
   @override
@@ -138,6 +155,9 @@ class EnglishTranslations extends Translations {
 
   @override
   String get weight => "Weight";
+
+  @override
+  String get last => "Last";
 
   @override
   String get areSureYouWantToExitWithoutSaving =>

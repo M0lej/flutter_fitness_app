@@ -1,18 +1,26 @@
+import 'dart:math';
+
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:gym_app/hive/exercise.dart';
 import 'package:gym_app/hive/workout_set.dart';
+import 'package:gym_app/settings/languages/translations.dart';
+import 'package:gym_app/themes/app_theme.dart';
 import 'package:gym_app/utils/custom_card.dart';
+import 'package:gym_app/utils/exercise_card/order_change_buttons.dart';
+import 'package:gym_app/utils/my_alert_dialog.dart';
 import 'package:gym_app/utils/my_image.dart';
 
 class ExerciseCard extends StatelessWidget {
   final Exercise exercise;
   final Function(Exercise) removeExercise;
   final Function(Exercise, bool) changeOrder;
+  final Translations translations;
 
-  final bool? isFirst;
-  final bool? isLast;
-  final bool? showSets;
+  final bool isFirst;
+  final bool isLast;
+  final bool showSets;
+  final bool isCompleted;
 
   const ExerciseCard({
     super.key,
@@ -22,28 +30,21 @@ class ExerciseCard extends StatelessWidget {
     this.isLast = false,
     this.showSets = false,
     required this.changeOrder,
+    this.isCompleted = false,
+    required this.translations,
   });
 
   @override
   Widget build(BuildContext context) {
-    // get rep counts
-    List<int> reps = exercise.workoutSets
-        .map((WorkoutSet workoutSet) => workoutSet.reps)
-        .toList();
-
-    // get unique rep labels for ex if I have list of reps like this [12,12,10,5] I would get [12,10,5]
-    Set<int> uniqueReps = reps.toSet();
-
-    // count how many times each rep label occur in reps list for ex. [2,1,1]
-    List<int> occurrences = uniqueReps
-        .map(
-          (int repCountA) =>
-              reps.where((int repCountB) => repCountA == repCountB).length,
-        )
-        .toList();
-
     return CustomCard(
+      color: isCompleted ? AppTheme.red : null,
       index: 0,
+      onLongPress: () => showYesNoDialog(
+        title: translations.removeExercise,
+        onYes: () => removeExercise(exercise),
+        appContext: context,
+        translations: translations,
+      ),
       children: [
         Row(
           spacing: 15,
@@ -75,16 +76,10 @@ class ExerciseCard extends StatelessWidget {
                       color: Theme.of(context).colorScheme.secondary,
                     ),
                   ),
-                  if (showSets!)
+                  if (showSets)
                     Text(
                       // map rep labels to format [occurrences] x [rep label]
-                      uniqueReps
-                          .map(
-                            (int repCount) =>
-                                // get index of repCount in uniqueReps because dart for some reason doesn't provide index property in map function lol, then get occurrences count at the same index
-                                '${occurrences[uniqueReps.toList().indexOf(repCount)]} x $repCount reps',
-                          )
-                          .join('\n'),
+                      "${exercise.workoutSets.map((WorkoutSet workoutSet) => '${workoutSet.reps} x ${workoutSet.weight} ${exercise.weightUnit.name}').toList().sublist(0, min(exercise.workoutSets.length, 4)).join('\n')}${exercise.workoutSets.length > 4 ? '\n...' : ''}",
                       style: TextStyle(
                         color: Theme.of(context).colorScheme.secondary,
                         fontSize: 12,
@@ -95,30 +90,32 @@ class ExerciseCard extends StatelessWidget {
             ),
           ],
         ),
-        Divider(thickness: 0.5, height: 1, color: Theme.of(context).focusColor),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                if (!isFirst!)
-                  IconButton(
-                    onPressed: () => changeOrder(exercise, true),
-                    icon: Icon(Icons.keyboard_arrow_up),
-                  ),
-                if (!isLast!)
-                  IconButton(
-                    onPressed: () => changeOrder(exercise, false),
-                    icon: Icon(Icons.keyboard_arrow_down),
-                  ),
-              ],
+
+        // if exercise is completed hide the divider and add a background to order change buttons
+        if (!isCompleted && !(isFirst && isLast))
+          Divider(
+            thickness: 0.5,
+            height: 1,
+            color: Theme.of(context).focusColor,
+          ),
+
+        if (isCompleted && !(isFirst && isLast))
+          Card(
+            child: OrderChangeButtons(
+              changeOrder: changeOrder,
+              exercise: exercise,
+              isFirst: isFirst,
+              isLast: isLast,
             ),
-            IconButton(
-              onPressed: () => removeExercise(exercise),
-              icon: Icon(Icons.delete),
-            ),
-          ],
-        ),
+          ),
+
+        if (!isCompleted && !(isFirst && isLast))
+          OrderChangeButtons(
+            changeOrder: changeOrder,
+            exercise: exercise,
+            isFirst: isFirst,
+            isLast: isLast,
+          ),
       ],
     );
   }

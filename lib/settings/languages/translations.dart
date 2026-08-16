@@ -32,15 +32,21 @@ abstract class Translations {
 
   String get areYouSureYouWantToDeletePlan;
   String get areYouSureYouWantToDeleteLog;
+  String get areYouSureYouWantToDeleteExercise;
   String get thisActionCannotBeUndone;
+  String get youHaveNotCompletedAllYourExercises;
+  String get removeExercise;
+  String get removeSet;
 
   String get delete;
   String get edit;
   String get cancel;
+  String get complete;
 
   String get weightUnit;
   String get reps;
   String get weight;
+  String get last;
 
   String get areSureYouWantToExitWithoutSaving;
   String get areYouSureWantToUpdateThisWorkout;

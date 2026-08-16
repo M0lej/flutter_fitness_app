@@ -23,13 +23,14 @@ class DataModelAdapter extends TypeAdapter<DataModel> {
       customExercises: (fields[3] as List).cast<Exercise>(),
       monthsStats: (fields[5] as List).cast<MonthStats>(),
       completedWorkoutsCount: fields[4] as int,
+      exercisesStats: (fields[6] as List).cast<ExerciseStats>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, DataModel obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.plans)
       ..writeByte(1)
@@ -41,7 +42,9 @@ class DataModelAdapter extends TypeAdapter<DataModel> {
       ..writeByte(4)
       ..write(obj.completedWorkoutsCount)
       ..writeByte(5)
-      ..write(obj.monthsStats);
+      ..write(obj.monthsStats)
+      ..writeByte(6)
+      ..write(obj.exercisesStats);
   }
 
   @override
