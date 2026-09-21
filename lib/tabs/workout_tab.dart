@@ -33,12 +33,14 @@ class WorkoutTab extends StatefulWidget {
 
 class _WorkoutTabState extends State<WorkoutTab> {
   late Plan _copiedPlan;
-  final List<String> _completedExercisesIds = [];
+  late final List<String> _completedExercisesIds;
 
   @override
   void initState() {
     super.initState();
     _copiedPlan = widget.plan.copy();
+    _completedExercisesIds =
+        widget.appData.activeWorkout?.completedExercisesIds ?? [];
   }
 
   // remove exercise from current workout
@@ -72,6 +74,8 @@ class _WorkoutTabState extends State<WorkoutTab> {
 
   void _refreshWorkoutTabWidget() {
     setState(() {});
+
+    widget.appData.updateActiveWorkout(_copiedPlan, _completedExercisesIds);
   }
 
   void _finishWorkout() {
@@ -115,7 +119,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
   }
 
   void _logWorkout() {
-    widget.appData.updateActiveWorkout(_copiedPlan);
+    widget.appData.updateActiveWorkout(_copiedPlan, _completedExercisesIds);
     widget.appData.addLog(_copiedPlan);
   }
 
@@ -175,7 +179,7 @@ class _WorkoutTabState extends State<WorkoutTab> {
 
   void _goBackAndUpdateActiveWorkout() {
     if (widget.appData.activeWorkout != null) {
-      widget.appData.updateActiveWorkout(_copiedPlan);
+      widget.appData.updateActiveWorkout(_copiedPlan, _completedExercisesIds);
     }
 
     Navigator.pop(context);
@@ -229,6 +233,8 @@ class _WorkoutTabState extends State<WorkoutTab> {
     setState(() {
       _completedExercisesIds.add(exerciseId);
     });
+
+    widget.appData.updateActiveWorkout(_copiedPlan, _completedExercisesIds);
   }
 
   @override

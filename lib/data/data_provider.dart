@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gym_app/hive/active_workout.dart';
 import 'package:gym_app/hive/data_model.dart';
 import 'package:gym_app/hive/exercise.dart';
 import 'package:gym_app/hive/exercise_stats.dart';
@@ -29,7 +30,7 @@ class DataProvider extends ChangeNotifier {
   List<WorkoutLog> get workoutLogs => _data.workoutLogs;
 
   // get active workout plan
-  WorkoutLog? get activeWorkout => _data.activeWorkout;
+  ActiveWorkout? get activeWorkout => _data.activeWorkout;
 
   // get custom exercises
   List<Exercise> get customExercises => _data.customExercises;
@@ -188,7 +189,8 @@ class DataProvider extends ChangeNotifier {
       throw Exception("Cannot replace active workout.");
     }
 
-    _data.activeWorkout = WorkoutLog(
+    _data.activeWorkout = ActiveWorkout(
+      completedExercisesIds: null,
       plan: plan,
       start: DateTime.now(),
       end: null,
@@ -204,12 +206,16 @@ class DataProvider extends ChangeNotifier {
     await _save();
   }
 
-  Future<void> updateActiveWorkout(Plan updatedPlan) async {
+  Future<void> updateActiveWorkout(
+    Plan updatedPlan,
+    List<String>? completedExercisesIds,
+  ) async {
     if (activeWorkout == null) {
       throw Exception("Active workout cannot be null");
     }
 
-    _data.activeWorkout = WorkoutLog(
+    _data.activeWorkout = ActiveWorkout(
+      completedExercisesIds: completedExercisesIds,
       plan: updatedPlan,
       start: activeWorkout!.start,
       end: activeWorkout!.end,

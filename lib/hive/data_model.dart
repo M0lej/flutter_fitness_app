@@ -1,3 +1,4 @@
+import 'package:gym_app/hive/active_workout.dart';
 import 'package:gym_app/hive/exercise.dart';
 import 'package:gym_app/hive/exercise_stats.dart';
 import 'package:gym_app/hive/month_stats.dart';
@@ -18,7 +19,7 @@ class DataModel {
   List<WorkoutLog> workoutLogs;
 
   @HiveField(2)
-  WorkoutLog? activeWorkout;
+  ActiveWorkout? activeWorkout;
 
   @HiveField(3)
   List<Exercise> customExercises;
@@ -44,7 +45,7 @@ class DataModel {
   }) {
     final resolvedActiveWorkout = activeWorkout == _activeWorkoutSentinel
         ? this.activeWorkout
-        : activeWorkout as WorkoutLog?;
+        : activeWorkout as ActiveWorkout?;
 
     return DataModel(
       plans: plans ?? this.plans,

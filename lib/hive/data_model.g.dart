@@ -19,7 +19,7 @@ class DataModelAdapter extends TypeAdapter<DataModel> {
     return DataModel(
       plans: (fields[0] as List).cast<Plan>(),
       workoutLogs: (fields[1] as List).cast<WorkoutLog>(),
-      activeWorkout: fields[2] as WorkoutLog?,
+      activeWorkout: fields[2] as ActiveWorkout?,
       customExercises: (fields[3] as List).cast<Exercise>(),
       monthsStats: (fields[5] as List).cast<MonthStats>(),
       completedWorkoutsCount: fields[4] as int,

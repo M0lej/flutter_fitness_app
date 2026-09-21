@@ -15,9 +15,14 @@ class AppTheme {
     focusColor: const Color.fromARGB(255, 45, 42, 54),
     highlightColor: red,
 
-    colorScheme: ColorScheme.dark(primary: Colors.white, secondary: secondary),
+    colorScheme: ColorScheme.dark(
+      primary: Colors.white,
+      secondary: secondary,
+      surface: backgroundBlack,
+    ),
 
     scaffoldBackgroundColor: backgroundBlack,
+    canvasColor: backgroundBlack,
 
     cardTheme: CardThemeData(
       margin: EdgeInsets.all(0),

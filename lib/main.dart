@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:gym_app/data/data_provider.dart';
 import 'package:gym_app/data/timer_provider.dart';
+import 'package:gym_app/hive/active_workout.dart';
 import 'package:gym_app/hive/data_model.dart';
 import 'package:gym_app/hive/exercise.dart';
 import 'package:gym_app/hive/exercise_stats.dart';
@@ -40,6 +41,7 @@ void main() async {
   Hive.registerAdapter(WorkoutSetAdapter());
   Hive.registerAdapter(PlanAdapter());
   Hive.registerAdapter(WorkoutLogAdapter());
+  Hive.registerAdapter(ActiveWorkoutAdapter());
   Hive.registerAdapter(WeightUnitAdapter());
   Hive.registerAdapter(MonthStatsAdapter());
   Hive.registerAdapter(ExerciseStatsAdapter());
