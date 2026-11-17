@@ -7,13 +7,30 @@ import 'package:gym_app/hive/exercise.dart';
 class ExerciseRepository {
   final List<Exercise> exercises = [];
   Future<void> loadExercises() async {
-    for (String exerciseIndex in exerciseIndexes) {
-      final String response = await rootBundle.loadString(
-        'assets/exercises/$exerciseIndex.json',
-      );
-      final jsonData = await json.decode(response);
+    exercises.clear();
 
-      exercises.add(Exercise.fromJson(jsonData));
+    const batchSize = 25;
+    for (var start = 0; start < exerciseIndexes.length; start += batchSize) {
+      final batch = exerciseIndexes.skip(start).take(batchSize);
+      final loadedExercises = await Future.wait(
+        batch.map((exerciseIndex) async {
+          try {
+            final response = await rootBundle.loadString(
+              'assets/exercises/$exerciseIndex.json',
+            );
+            final jsonData = json.decode(response) as Map<String, dynamic>;
+            return Exercise.fromJson(jsonData);
+          } catch (error) {
+            return null;
+          }
+        }),
+      );
+
+      exercises.addAll(loadedExercises.whereType<Exercise>());
+    }
+
+    if (exercises.isEmpty) {
+      throw Exception('Exercise library could not be loaded');
     }
   }
 }

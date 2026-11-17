@@ -37,6 +37,8 @@ class _ExerciseSearchTabState extends State<ExerciseSearchTab> {
   ExercisesSource _exercisesSource = ExercisesSource.library;
   List<Exercise> _exercises = [];
   List<Exercise> _exercisesSourceList = [];
+  bool _isLoading = true;
+  String? _loadError;
 
   List<Exercise> _appExercises = [];
 
@@ -64,20 +66,31 @@ class _ExerciseSearchTabState extends State<ExerciseSearchTab> {
 
   void _loadExercises() async {
     ExerciseRepository exerciseRepository = ExerciseRepository();
-    await exerciseRepository.loadExercises();
+    try {
+      await exerciseRepository.loadExercises();
+      if (!mounted) return;
 
-    setState(() {
-      _appExercises = exerciseRepository.exercises
-          // exclude exercises that are already added
-          .where(
-            (Exercise exercise) =>
-                widget.excludedExercisesIds.contains(exercise.id) == false,
-          )
-          .toList();
+      setState(() {
+        _appExercises = exerciseRepository.exercises
+            // exclude exercises that are already added
+            .where(
+              (Exercise exercise) =>
+                  widget.excludedExercisesIds.contains(exercise.id) == false,
+            )
+            .toList();
 
-      _exercises = _appExercises;
-      _exercisesSourceList = _exercises;
-    });
+        _exercises = _appExercises;
+        _exercisesSourceList = _exercises;
+        _isLoading = false;
+        _loadError = null;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _isLoading = false;
+        _loadError = "Couldn't load exercises list.";
+      });
+    }
   }
 
   void _filterExercises(String value) {
@@ -87,7 +100,7 @@ class _ExerciseSearchTabState extends State<ExerciseSearchTab> {
       });
       return;
     }
-    List<Exercise> sortedExercises = _exercisesSourceList;
+    List<Exercise> sortedExercises = List<Exercise>.from(_exercisesSourceList);
 
     sortedExercises.sort((Exercise a, Exercise b) {
       int scoreA = 0;
@@ -109,7 +122,7 @@ class _ExerciseSearchTabState extends State<ExerciseSearchTab> {
     });
 
     setState(() {
-      _exercises = sortedExercises.sublist(0, 5);
+      _exercises = sortedExercises.take(5).toList();
     });
   }
 
@@ -210,27 +223,38 @@ class _ExerciseSearchTabState extends State<ExerciseSearchTab> {
           ),
         ),
 
-        SliverPadding(
-          padding: const EdgeInsets.all(15),
-          sliver: SliverList.separated(
-            key: _listKey,
-            separatorBuilder: (context, index) => const MyDivider(),
-            itemCount: _exercises.length,
-            itemBuilder: (context, index) {
-              Exercise exercise = _exercises[index];
+        if (_isLoading)
+          const SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (_loadError != null)
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Center(child: Text(_loadError!)),
+          )
+        else
+          SliverPadding(
+            padding: const EdgeInsets.all(15),
+            sliver: SliverList.separated(
+              key: _listKey,
+              separatorBuilder: (context, index) => const MyDivider(),
+              itemCount: _exercises.length,
+              itemBuilder: (context, index) {
+                Exercise exercise = _exercises[index];
 
-              return ExerciseInfoCard(
-                index: index,
-                exercise: exercise,
-                addExercise: widget.addExercise,
-                settings: widget.settings,
-                appData: widget.appData,
-                refreshCustomExercises: _refreshCustomExercises,
-                canBeDeleted: _exercisesSource == ExercisesSource.custom,
-              );
-            },
+                return ExerciseInfoCard(
+                  index: index,
+                  exercise: exercise,
+                  addExercise: widget.addExercise,
+                  settings: widget.settings,
+                  appData: widget.appData,
+                  refreshCustomExercises: _refreshCustomExercises,
+                  canBeDeleted: _exercisesSource == ExercisesSource.custom,
+                );
+              },
+            ),
           ),
-        ),
       ],
     );
   }
