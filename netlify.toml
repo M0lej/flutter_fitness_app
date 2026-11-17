@@ -1,0 +1,13 @@
+# Flutter web build on Netlify.
+# The Netlify build image does not ship with Flutter; the build script downloads
+# the stable SDK archive and compiles the web app into build/web.
+[build]
+  command = "bash scripts/netlify-build.sh"
+  publish = "build/web"
+
+# Single-page app fallback: send every unknown path to index.html so that
+# refreshing or opening a deep link doesn't return "Page not found".
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
