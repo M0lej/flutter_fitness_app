@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:gym_app/data/data_provider.dart';
@@ -18,6 +19,7 @@ import 'package:gym_app/tabs/app_tabs_controller.dart';
 import 'package:gym_app/settings/settings_provider.dart';
 import 'package:gym_app/themes/app_theme.dart';
 import 'package:gym_app/utils/my_alert_dialog.dart';
+import 'package:gym_app/widgets/browser_phone_frame.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:provider/provider.dart';
 
@@ -75,6 +77,10 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       navigatorKey: appNavigatorKey,
       theme: AppTheme().dark,
+      builder: kIsWeb
+          ? (context, child) =>
+                BrowserPhoneFrame(child: child ?? const SizedBox.shrink())
+          : null,
       home: AppTabsController(),
     );
   }

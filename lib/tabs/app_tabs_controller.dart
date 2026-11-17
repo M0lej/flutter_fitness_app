@@ -18,23 +18,28 @@ void changeTab(int index, BuildContext context) {
   final state = context.findAncestorStateOfType<_AppTabsControllerState>();
 
   if (state != null) {
-    state._onTap(index, context);
+    state._onTap(index);
   }
 }
 
 class _AppTabsControllerState extends State<AppTabsController> {
-  int _currentIndex = 0;
+  final ValueNotifier<int> _currentIndex = ValueNotifier(0);
   final PageController _controller = PageController();
 
-  void _onTap(int index, BuildContext context) {
+  void _onTap(int index) {
+    _currentIndex.value = index;
     _controller.animateToPage(
       index,
       duration: const Duration(milliseconds: 200),
       curve: Curves.ease,
     );
-    setState(() {
-      _currentIndex = index;
-    });
+  }
+
+  @override
+  void dispose() {
+    _currentIndex.dispose();
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -42,7 +47,7 @@ class _AppTabsControllerState extends State<AppTabsController> {
     return Scaffold(
       body: PageView(
         controller: _controller,
-        onPageChanged: (index) => setState(() => _currentIndex = index),
+        onPageChanged: (index) => _currentIndex.value = index,
         children: [
           Navigator(
             onGenerateRoute: (route) => MaterialPageRoute(
@@ -72,19 +77,22 @@ class _AppTabsControllerState extends State<AppTabsController> {
       ),
 
       // Bottom navigation bar
-      bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (int index) => _onTap(index, context),
-        icons: [
-          const Icon(Icons.home_outlined),
-          const Icon(Icons.article_outlined),
-          const Icon(Icons.settings_outlined),
-        ],
-        selectedIcons: [
-          const Icon(Icons.home),
-          const Icon(Icons.article),
-          const Icon(Icons.settings),
-        ],
+      bottomNavigationBar: ValueListenableBuilder<int>(
+        valueListenable: _currentIndex,
+        builder: (context, currentIndex, child) => CustomBottomNavigationBar(
+          currentIndex: currentIndex,
+          onTap: _onTap,
+          icons: [
+            const Icon(Icons.home_outlined),
+            const Icon(Icons.article_outlined),
+            const Icon(Icons.settings_outlined),
+          ],
+          selectedIcons: [
+            const Icon(Icons.home),
+            const Icon(Icons.article),
+            const Icon(Icons.settings),
+          ],
+        ),
       ),
     );
   }

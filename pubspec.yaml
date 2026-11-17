@@ -8,7 +8,10 @@ environment:
 
 dependencies:
   auto_size_text: ^3.0.0
+  device_preview: ^3.0.0-prerelease3
   flutter:
+    sdk: flutter
+  flutter_web_plugins:
     sdk: flutter
   flutter_local_notifications: ^22.2.0
   font_awesome_flutter: ^11.0.0
